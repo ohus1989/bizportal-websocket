@@ -1,5 +1,7 @@
 package com.kdax.bizportal.common.util;
 
+import com.kdax.bizportal.common.constants.GlobalConstants;
+
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.security.AlgorithmParameters;
@@ -46,7 +48,22 @@ public class CryptoUtil {
 		md.update(msg.getBytes());
 		return CryptoUtil.byteToHexString(md.digest());
 	}
-	
+
+	/**
+	 *  SALT 사용하여 SHA-256으로 해시한다.
+	 *
+	 * @param msg
+	 * @return
+	 */
+	public static String getPasswordEncryt(String msg)  throws NoSuchAlgorithmException {
+
+		String saltMsg = GlobalConstants.DEFALUT_SALT_KEY + msg;
+		MessageDigest md = MessageDigest.getInstance("SHA-256");
+		md.update(saltMsg.getBytes());
+		return CryptoUtil.byteToHexString(md.digest());
+	}
+
+
 	/**
 	 * 바이트 배열을 HEX 문자열로 변환한다.
 	 * @param data

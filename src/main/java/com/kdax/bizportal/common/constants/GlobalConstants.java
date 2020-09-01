@@ -7,4 +7,8 @@ public class GlobalConstants {
     public static final String TOKEN_PREFIX="BIZPORTAL_";
     public static final String TOKEN_HEADER="bizportal-access-token";
     public static final String TOKEN_JWTID="BIZPORTAL";
+
+    public static final String DEFALUT_MENUVERSION ="001";
+    public static final String DEFALUT_SALT_KEY ="KKK";
+
 }

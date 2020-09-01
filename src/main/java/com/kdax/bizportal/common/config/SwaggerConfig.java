@@ -77,33 +77,4 @@ public class SwaggerConfig {
                 .globalResponseMessage(RequestMethod.GET, errorList);
     }
 
-
-
-    @Bean
-    public Docket apiUI() {
-        ResponseMessage error_500 = new ResponseMessageBuilder()
-                .code(500)
-                .message("500 message")
-                // .responseModel(new ModelRef("Error"))
-                .build();
-
-        ResponseMessage error_403 = new ResponseMessageBuilder()
-                .code(403)
-                .message("Forbidden!")
-                .build();
-
-        List<ResponseMessage> errorList = new ArrayList<>();
-        errorList.add(error_403);
-        errorList.add(error_500);
-
-        return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("ui")
-                .select()
-                .apis(RequestHandlerSelectors.basePackage(basePackage))
-                .paths(PathSelectors.ant("/ui/**"))
-                .build()
-                .useDefaultResponseMessages(false)
-                .globalResponseMessage(RequestMethod.GET, errorList);
-    }
-
 }

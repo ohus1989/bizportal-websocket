@@ -41,7 +41,7 @@ dependencies {
     compile('org.apache.tomcat.embed:tomcat-embed-core:8.5.32')
     compile('io.github.openfeign:feign-core:9.5.1')
     compile('io.jsonwebtoken:jjwt:0.9.0')
-
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '1.4.0.RELEASE'
 
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: '2.2.2.RELEASE'
 

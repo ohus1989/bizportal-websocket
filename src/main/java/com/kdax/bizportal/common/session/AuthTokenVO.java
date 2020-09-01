@@ -9,11 +9,10 @@ import java.util.Locale;
 @Getter
 @Setter
 public class AuthTokenVO {
-    private Date expireDate;
     private String uuid;
-    private String userId;
+    private Date expireDate;
+    private String userCodeId;
+    private String userDeptId;
     private String userLevel;
-    private String userGroup;
-    private String userDept;
     private Locale userLocale;
 }

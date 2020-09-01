@@ -6,6 +6,7 @@ import com.kdax.bizportal.common.enums.AccessScopeType;
 import com.kdax.bizportal.common.exception.BizExceptionMessage;
 import com.kdax.bizportal.common.exception.ErrorType;
 import com.kdax.bizportal.common.util.SeedCipher;
+import com.kdax.bizportal.common.voCommon.UserVO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -117,7 +118,7 @@ public class VerifyToken {
         try {
             if(StringUtils.isEmpty(token) ){
                 log.warn("invaild token {}", token);
-                throw new BizExceptionMessage(ErrorType.NOT_FOUND_USER_ERROR);
+                throw new BizExceptionMessage(ErrorType.NOT_INVALID_TOKEN);
             }
 
             Jws<Claims> jwsClaims = getDecodeToken(token);
@@ -128,7 +129,7 @@ public class VerifyToken {
 
             if (authTokenVO == null) {
                 log.warn("Token data is invaliad! : {}", token);
-                throw new BizExceptionMessage(ErrorType.NOT_FOUND_USER_ERROR);
+                throw new BizExceptionMessage(ErrorType.NOT_INVALID_TOKEN);
             }
 
             //inputTokenVO.getUgpGrpCods() added, integrity check
@@ -136,25 +137,25 @@ public class VerifyToken {
 
             if(!authTokenVO.getUuid().equals(sc.SHA256(getRemoteIp() + authTokenVO.getUserLevel() ))){
                 log.warn("Token uui is invaliad! : {}", token);
-                throw new BizExceptionMessage(ErrorType.NOT_FOUND_USER_ERROR);
+                throw new BizExceptionMessage(ErrorType.NOT_INVALID_TOKEN);
             }
             Calendar today = Calendar.getInstance();
             today.setTime(new Date());
 
             if (authTokenVO.getExpireDate().compareTo(today.getTime()) == -1) {
                 log.warn("token is expired {}", authTokenVO.getExpireDate());
-                throw new BizExceptionMessage(ErrorType.NOT_FOUND_USER_ERROR);
+                throw new BizExceptionMessage(ErrorType.NOT_INVALID_TOKEN);
             }
 
         }
         catch(Exception e){
             log.warn("Exception : {}", e.getMessage());
-            throw new BizExceptionMessage(ErrorType.NOT_FOUND_USER_ERROR);
+            throw new BizExceptionMessage(ErrorType.NOT_INVALID_TOKEN);
         }
         return authTokenVO;
     }
 
-    public String getToken(UserInfoVO userInfoVO){
+    public String getToken(UserVO userInfoVO){
 
         AuthTokenVO authTokenVO = new AuthTokenVO();
         String jwtString = "";
@@ -166,19 +167,12 @@ public class VerifyToken {
             cal.setTime(new Date());
             cal.add(Calendar.HOUR, expireHour);
 
-            userInfoVO.setUidLocale(Locale.US);
-
-            authTokenVO.setUserId(userInfoVO.getUidCode() );
-            authTokenVO.setUserLevel(userInfoVO.getUidLevel() );
+            authTokenVO.setUserCodeId(userInfoVO.getCodeId() );
+            authTokenVO.setUserLevel("DEV");  // 향후 사용 여부 확인
             authTokenVO.setExpireDate(cal.getTime());
-            authTokenVO.setUserLocale(userInfoVO.getUidLocale());
+            authTokenVO.setUserLocale( new Locale(userInfoVO.getServiceLocale()) );
             authTokenVO.setUuid(sc.SHA256(getRemoteIp() +  authTokenVO.getUserLevel()  ));
 
-
-            //byte[] cmkByte = sc.getCleintKey(bizportalDomainCode.getBytes(GlobalConstants.DEFAULT_CHARSET),
-            //        bizportalDomainSmKey.getBytes(GlobalConstants.DEFAULT_CHARSET));
-            //String cmk = sc.getHex(cmkByte);
-            //String authToken =sc.encryptData(gson.toJson(authTokenVO), cmk.getBytes(GlobalConstants.DEFAULT_CHARSET));
             String authToken = gson.toJson(authTokenVO);
             log.info("authToken :: {}", authToken);
             //log.info("descrypt token : {}", sc.decryptAsString(sc.getByteFromHexString(authToken), cmk.getBytes(GlobalConstants.DEFAULT_CHARSET)));
@@ -190,7 +184,7 @@ public class VerifyToken {
 
         }catch (Exception e) {
             log.warn("Exception : {}", e.getMessage());
-            throw new BizExceptionMessage(ErrorType.NOT_FOUND_USER_ERROR, userInfoVO.getUidLocale());
+            throw new BizExceptionMessage(ErrorType.NOT_FOUND_USER_ERROR, userInfoVO.getServiceLocale() );
         }
 
         return jwtString;
