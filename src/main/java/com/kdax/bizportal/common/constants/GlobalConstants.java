@@ -11,4 +11,7 @@ public class GlobalConstants {
     public static final String DEFALUT_MENUVERSION ="001";
     public static final String DEFALUT_SALT_KEY ="KKK";
 
+
+    public static final int DEFALUT_REDIS_TIMEOUT_USERINFO = 3600; //second
+
 }

@@ -24,7 +24,10 @@ public class RedisRepositoryConfig {
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(redisHost, redisPort);
-        lettuceConnectionFactory.setPassword(redisPassword);
+
+        if(!redisPassword.isEmpty())
+            lettuceConnectionFactory.setPassword(redisPassword);
+        
         return lettuceConnectionFactory;
     }
 
@@ -33,6 +36,8 @@ public class RedisRepositoryConfig {
     public RedisTemplate<?, ?> redisTemplate() {
         RedisTemplate<byte[], byte[]> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
+        
+
         return redisTemplate;
     }
 }

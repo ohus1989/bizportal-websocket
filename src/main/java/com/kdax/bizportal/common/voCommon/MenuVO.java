@@ -3,12 +3,13 @@ package com.kdax.bizportal.common.voCommon;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 @Getter
 @Setter
-public class MenuVO {
+public class MenuVO implements Serializable {
     private String userCodeId;
     private String roleLevel;
     private String roleId;
