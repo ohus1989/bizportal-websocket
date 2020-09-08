@@ -14,4 +14,9 @@ public class GlobalConstants {
 
     public static final int DEFALUT_REDIS_TIMEOUT_USERINFO = 3600; //second
 
+    /* esignon API URL*/
+    public static final String ESIGNON_GET_TOKEN_API ="https://docs.esignon.net/api/{companyId}/login";
+    /* esignon request code*/
+    public static final String ESIGNON_GET_TOKEN_REQ ="1001Q";
+
 }
