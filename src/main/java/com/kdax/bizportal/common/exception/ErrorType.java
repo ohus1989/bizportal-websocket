@@ -16,6 +16,7 @@ public enum ErrorType {
     INPUT_USERPASSWORD_ERROR(21006, "유효하지 않은 비밀번호 입니다.", "input userpassword error", "INPUT_USERPASSWORD_ERROR"),
     NOT_INPUT_FILE(21007, "파일을 등록해주세요.", " not input file", "NOT_INPUT_FILE"),
     REGIST_USEREINTO_ERROR(21008, "사용자 정보 등록 에러", "regist userinfo, error", "REGIST_USEREINTO_ERROR"),
+    IO_EXCEPTION(21009, "IO exception", " IOException. Please contact the manager.", "IO_EXCEPTION"),
 
 
     // 22000 ~  auth, role
@@ -31,9 +32,16 @@ public enum ErrorType {
 
 
     // 26000~ App Error
-    IO_EXCEPTION(21009, "IO exception", " IOException. Please contact the manager.", "IO_EXCEPTION"),
     SERVER_INTERNAL_EXCEPTION(26001, "Server error", "Server Internal Error.", "SERVER_INTERNAL_EXCEPTION"),
     WRONG_LANGUAGE_SET(26002, "language set data is not set!", "Server Internal Error.", "WRONG_LANGUAGE_SET"),
+
+    // 27000~ external interface Error
+    // ESIGNON interface
+    ESIGNON_SERVER_EXCEPTION(27001, "esignon API 서버에 문제가 있습니다.", "esignon API 서버에 문제가 있습니다.", "ESIGNON_SERVER_EXCEPTION"),
+    ESIGNON_HEADER_NOT_FOUND_EXCEPTION(27011, "esignon 응답에 헤더 값이 없습니다.", "esignon 응답에 http body 구성은 헤더, 바디가 포함된 map 형태입니다.", "ESIGNON_HEADER_NOT_FOUND_EXCEPTION"),
+    ESIGNON_BODY_NOT_FOUND_EXCEPTION(27012, "esignon 응답에 바디 값이 없습니다.", "esignon 응답에 http body 구성은 헤더, 바디가 포함된 map 형태입니다.", "ESIGNON_BODY_NOT_FOUND_EXCEPTION"),
+    ESIGNON_RESULT_FAIL_EXCEPTION(27013, "esignon 정상요청이 아닙니다.", "esignon 정상요청이 아닙니다.", "ESIGNON_RESULT_FAIL_EXCEPTION"),
+
 
 
     // 90001~ default, unknown
