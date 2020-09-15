@@ -1,20 +1,21 @@
 package com.kdax.bizportal.common.util;
 
-import jdk.nashorn.internal.runtime.regexp.RegExp;
 import lombok.experimental.UtilityClass;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.*;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URLEncoder;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -105,4 +106,44 @@ public class RestTemplateUtil {
         factory.setReadTimeout(5000);
         return new RestTemplate(factory);
     }
+
+    public static String downloadGet(String url, String destPath) {
+
+        RestTemplate restTemplate = createRestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Accept-Encoding", "gzip, deflate, sdch");
+
+        // Optional Accept header
+        RequestCallback requestCallback = request -> {
+            request.getHeaders().addAll(headers);
+            request.getHeaders().setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM, MediaType.ALL));
+            FormHttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
+            formHttpMessageConverter.setCharset(Charset.forName("EUC-KR"));
+        };
+
+        // Streams the response instead of loading it all in memory
+        ResponseExtractor<Void> responseExtractor = response -> {
+            // Here I write the response to a file but do what you like
+            String filename = response.getHeaders().getContentDisposition().getFilename();
+            Path path = Paths.get(destPath);
+            Files.copy(response.getBody(), path);
+            return null;
+        };
+
+        String filename = restTemplate.execute(URI.create(url), HttpMethod.GET, requestCallback,  response -> {
+            // Here I write the response to a file but do what you like
+            String name = "";
+            if (response.getHeaders().getContentDisposition().getFilename()!=null){
+                name = response.getHeaders().getContentDisposition().getFilename();
+            }
+            Path path = Paths.get(destPath);
+            Files.copy(response.getBody(), path);
+            return name;
+        });
+
+        return filename;
+
+    }
+
 }
