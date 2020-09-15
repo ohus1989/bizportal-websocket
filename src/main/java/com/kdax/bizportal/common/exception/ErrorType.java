@@ -45,7 +45,9 @@ public enum ErrorType {
 
 
     // 90001~ default, unknown
-    UNKNOWN(90001, "Server error", "Sever Internal Error.", "UNKNOWN");
+    UNKNOWN(90001, "Server error", "Sever Internal Error.", "UNKNOWN"),
+    // 91001~ default, unknown
+    OBJECT_NULL_EXCEPTION(91001, "object is null", "object is null", "OBJECT_NULL_EXCEPTION");
 
     private final int code;
     private final String message;

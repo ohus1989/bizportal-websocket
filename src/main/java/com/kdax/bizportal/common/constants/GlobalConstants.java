@@ -17,6 +17,9 @@ public class GlobalConstants {
     /* esignon API*/
     public static final String ESIGNON_COMPANY_ID = "TESTAPI";
     public static final String ESIGNON_TOKEN_HEADER = "ESIGNON-access-token";
+    public static final String ESIGNON_STATUS = "ESIGNON-access-status";
+    public static final String ESIGNON_STATUS_SUCCESS = "SUCCESS";
+    public static final String ESIGNON_STATUS_FAIL = "FAIL";
     /* esignon API URL*/
     public static final String ESIGNON_DOMAIN = "https://docs.esignon.net";
     public static final String ESIGNON_GET_TOKEN_API =ESIGNON_DOMAIN+"/api/{companyId}/login";
