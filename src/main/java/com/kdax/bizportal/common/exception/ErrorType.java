@@ -6,6 +6,7 @@ import java.util.Locale;
 
 public enum ErrorType {
     ALL_SUCCESS_OK(0, "OK.", "all thing sucess.", "ALL_SUCCESS_OK"),
+    FAIL(1, "fail", "fail", "FAIL"),
 
     // 21000 ~  Sing In Message
     DUPLICATION_USER_ERROR(21001, "중복된 사용자입니다.", "duplicate user..", "DUPLICATION_USER_ERROR"),
