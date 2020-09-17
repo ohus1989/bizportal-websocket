@@ -25,5 +25,6 @@ public class GlobalConstants {
     public static final String ESIGNON_GET_TOKEN_API =ESIGNON_DOMAIN+"/api/{companyId}/login";
     /* esignon request code*/
     public static final String ESIGNON_GET_TOKEN_REQ ="1001Q";
+    public static final String ESIGNON_GET_DOCLIST_REQ ="1123Q";
 
 }

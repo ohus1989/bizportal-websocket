@@ -30,13 +30,13 @@ public class RestTemplateUtil {
      * @param jsonMessage
      * @return HashMap<String, Object> result
      */
-    public HashMap<String, Object> restTemplateExchange(HttpMethod httpMethod, String url, String jsonMessage) {
+    public HashMap<String, Object> restTemplateExchange(HttpMethod httpMethod, String url, String jsonMessage, HttpHeaders header) {
         HashMap<String, Object> result = new HashMap<String, Object>();
 
         try {
             RestTemplate restTemplate = createRestTemplate();
 
-            HttpHeaders header = new HttpHeaders();
+            //HttpHeaders header = new HttpHeaders();
             header.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<String> entity = new HttpEntity<String>(jsonMessage.toString(), header);
@@ -58,6 +58,11 @@ public class RestTemplateUtil {
 
         return result;
 
+    }
+
+    public HashMap<String, Object> restTemplateExchange(HttpMethod httpMethod, String url, String jsonMessage) {
+        HttpHeaders header = new HttpHeaders();
+        return restTemplateExchange(httpMethod,url,jsonMessage,header);
     }
 
     /**
