@@ -1,5 +1,6 @@
 package com.kdax.bizportal.common.util;
 
+import com.google.gson.Gson;
 import lombok.experimental.UtilityClass;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -71,27 +72,48 @@ public class RestTemplateUtil {
      *
      * @param httpMethod
      * @param url
-     * @param requestParamMap
+     * @param bodyParam
      * @param header
      * @return HashMap<String, Object> result
      */
-    public HashMap<String, Object> restTemplateExchange(HttpMethod httpMethod, String url, Map requestParamMap, HttpHeaders header) {
+    public HashMap<String, Object> restTemplateExchange(HttpMethod httpMethod, String url, Object bodyParam, HttpHeaders header) {
         HashMap<String, Object> result = new HashMap<String, Object>();
 
         try {
             RestTemplate restTemplate = createRestTemplate();
+            ResponseEntity<Map> resultMap = null;
+            HttpEntity<String> entity;
+            UriComponents uri;
+            switch (httpMethod){
+                case GET:
+                    uri = UriComponentsBuilder.fromHttpUrl(url)
+                            .queryParams((MultiValueMap<String, String>) bodyParam)
+                            .build()
+                            .encode(StandardCharsets.UTF_8);
 
-            UriComponents uri = UriComponentsBuilder.fromHttpUrl(url)
-                    .queryParams((MultiValueMap<String, String>) requestParamMap)
-                    .build()
-                    .encode(StandardCharsets.UTF_8);
+                    entity = new HttpEntity<String>(header);
+                    resultMap = restTemplate.exchange(uri.toUri(), httpMethod, entity, Map.class);
+                    break;
+                default:
+                    Gson gson = new Gson();
 
-            HttpEntity<String> entity = new HttpEntity<String>(header);
-            ResponseEntity<Map> resultMap = restTemplate.exchange(uri.toUri(), httpMethod, entity, Map.class);
+                    String jsonMessage = gson.toJson(bodyParam);
 
-            result.put("statusCode", resultMap.getStatusCodeValue());
-            result.put("header", resultMap.getHeaders());
-            result.put("body", resultMap.getBody());
+                    entity = new HttpEntity<String>(jsonMessage.toString(), header);
+                    uri = UriComponentsBuilder.fromHttpUrl(url).build();
+
+                    resultMap = restTemplate.exchange(uri.toString(), httpMethod, entity, Map.class);
+
+                    break;
+            }
+
+            if(resultMap !=null){
+                result.put("statusCode", resultMap.getStatusCodeValue());
+                result.put("header", resultMap.getHeaders());
+                result.put("body", resultMap.getBody());
+            }else{
+                throw new Exception();
+            }
 
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             result.put("statusCode", e.getRawStatusCode());
