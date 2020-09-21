@@ -42,6 +42,9 @@ public class VerifyToken {
     @Value("${bizportal.auth.token.expire.hour}")
     private int expireHour;
 
+    @Value("${bizportal.auth.default.flag}")
+    private boolean authDefaultFlag;
+
     @Autowired
     HttpServletRequest request;
 
@@ -76,7 +79,7 @@ public class VerifyToken {
     public Object doSomethingAround(final ProceedingJoinPoint joinPoint) throws Throwable {
 
         String token = request.getHeader(GlobalConstants.TOKEN_HEADER);
-        boolean flag = true; //false default , for test
+        boolean flag = authDefaultFlag; //false default , for test
 
         if(!StringUtils.isEmpty(token)) {
             MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
