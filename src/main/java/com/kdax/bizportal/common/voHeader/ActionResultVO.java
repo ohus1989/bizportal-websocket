@@ -21,6 +21,7 @@ public class ActionResultVO extends ResponseHeaderVO{
     public ActionResultVO(Object objVO, ErrorType errorType) {
         //super(errorType);
         this.setCode(errorType.getCode());
+        this.setMessage(errorType.getMessage());
         this.resultVO = objVO;
     }
 
@@ -35,6 +36,11 @@ public class ActionResultVO extends ResponseHeaderVO{
     }
     public void setResultVO(Object resultVO) {
         this.resultVO = resultVO;
+    }
+
+    public void setErrorType(ErrorType errorType) {
+        this.setCode(errorType.getCode());
+        this.setMessage(errorType.getMessage());
     }
 
 }
