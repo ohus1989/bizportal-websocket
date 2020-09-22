@@ -23,6 +23,7 @@ public class UserVO {
     private String createCodeId;
     private String updateTime;
     private String updateCodeId;
-
+    //
     private String eSignOnId;
+    private String eSignOnPwd;
 }
