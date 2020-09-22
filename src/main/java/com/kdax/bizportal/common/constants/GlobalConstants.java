@@ -15,7 +15,8 @@ public class GlobalConstants {
     public static final int DEFALUT_REDIS_TIMEOUT_USERINFO = 3600; //second
 
     /* esignon API*/
-    public static final String ESIGNON_COMPANY_ID = "TESTAPI";
+    public static final String ESIGNON_COMPANY_ID_HEADER = "ESIGNON-companyid";
+    public static final String ESIGNON_COMPANY_CLIENTID_HEADER = "ESIGNON-clientid";
     public static final String ESIGNON_TOKEN_HEADER = "ESIGNON-access-token";
     public static final String ESIGNON_STATUS = "ESIGNON-access-status";
     public static final String ESIGNON_STATUS_SUCCESS = "SUCCESS";
