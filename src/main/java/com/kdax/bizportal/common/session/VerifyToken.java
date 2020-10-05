@@ -39,8 +39,8 @@ public class VerifyToken {
     @Value("${bizportal.domain.smkey}")
     private String bizportalDomainSmKey;
 
-    @Value("${bizportal.auth.token.expire.hour}")
-    private int expireHour;
+    @Value("${bizportal.auth.token.expire.minute}")
+    private int expireMinute;
 
     @Value("${bizportal.auth.default.flag}")
     private boolean authDefaultFlag;
@@ -168,7 +168,7 @@ public class VerifyToken {
             SeedCipher sc = new SeedCipher();
             Calendar cal = Calendar.getInstance();
             cal.setTime(new Date());
-            cal.add(Calendar.HOUR, expireHour);
+            cal.add(Calendar.MINUTE, expireMinute);
 
             authTokenVO.setUserCodeId(userInfoVO.getCodeId() );
             authTokenVO.setUserLevel("DEV");  // 향후 사용 여부 확인
