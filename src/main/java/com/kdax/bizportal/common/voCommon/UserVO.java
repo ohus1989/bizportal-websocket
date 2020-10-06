@@ -26,4 +26,5 @@ public class UserVO {
     //
     private String eSignOnId;
     private String eSignOnPwd;
+    private String fcmToken;
 }

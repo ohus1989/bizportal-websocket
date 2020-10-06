@@ -200,4 +200,12 @@ public class VerifyToken {
         }
         return ip;
     }
+
+    public AuthTokenVO getAuthTokenFromTokenHeader(){
+
+        String token = request.getHeader(GlobalConstants.TOKEN_HEADER);
+        AuthTokenVO authTokenVO = this.getAuthTokenFromString(token);
+
+        return authTokenVO;
+    }
 }

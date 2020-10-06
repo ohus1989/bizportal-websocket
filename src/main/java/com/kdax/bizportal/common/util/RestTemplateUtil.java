@@ -2,6 +2,7 @@ package com.kdax.bizportal.common.util;
 
 import com.google.gson.Gson;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.FormHttpMessageConverter;
@@ -20,6 +21,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @UtilityClass
 public class RestTemplateUtil {
 
@@ -34,6 +36,7 @@ public class RestTemplateUtil {
     public HashMap<String, Object> restTemplateExchange(HttpMethod httpMethod, String url, String jsonMessage, HttpHeaders header) {
         HashMap<String, Object> result = new HashMap<String, Object>();
 
+        log.info("restTemplateExchange jsonMessage {}");
         try {
             RestTemplate restTemplate = createRestTemplate();
 
@@ -79,6 +82,7 @@ public class RestTemplateUtil {
     public HashMap<String, Object> restTemplateExchange(HttpMethod httpMethod, String url, Object bodyParam, HttpHeaders header) {
         HashMap<String, Object> result = new HashMap<String, Object>();
 
+        log.info("bodyParam {}",bodyParam);
         try {
             RestTemplate restTemplate = createRestTemplate();
             ResponseEntity<Map> resultMap = null;
