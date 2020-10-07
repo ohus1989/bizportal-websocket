@@ -11,6 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,7 +66,8 @@ public class ExcelUtil {
                 // title header summary
                 if(excelTitleValid(titleFlag, sConfig, i, nullRows)
                         ||excelHeaderValid(headerFlag, sConfig, i, nullRows)
-                        ||excelSummaryValid(summaryFlag, sConfig, worksheet, i, nullRows)){
+                        ||excelSummaryValid(summaryFlag, sConfig, worksheet, i, nullRows)
+                        ||row.getLastCellNum()<0){
                     continue;
                 }
 
@@ -77,14 +80,17 @@ public class ExcelUtil {
                     CellType ctype = row.getCell(j).getCellType();
                     switch (ctype){
                         case STRING:
+
                             data.put(createColName(sConfig,j),row.getCell(j).getStringCellValue());
                             break;
                         case NUMERIC:
                             //cell style format get (doc이 나오는 데이터와 상이 하므로 추후 수정 가능
                             int dataFormat = row.getCell(j).getCellStyle().getDataFormat();
                             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-
-                            if(DateUtil.isCellDateFormatted(row.getCell(j)) || dataFormat ==14 || dataFormat ==55 || dataFormat ==178){
+                            if(dataFormat ==20 || dataFormat ==21){
+                                data.put(createColName(sConfig,j), row.getCell(j).getLocalDateTimeCellValue().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                                break;
+                            }else if(DateUtil.isCellDateFormatted(row.getCell(j)) || dataFormat ==14 || dataFormat ==55 || dataFormat ==178){
                                 // 기존 date format
                                 // excel style 중 선별
                                 data.put(createColName(sConfig,j),dateFormat.format(row.getCell(j).getDateCellValue()));
@@ -147,7 +153,7 @@ public class ExcelUtil {
         Boolean returnFlag = false;
         if(headerFlag && sConfig.getExistSheetHeader() && sConfig.getNotIncludeSheetHeader()){
             if(sConfig.getSheetHeaderIndex() > -1){
-                if(sConfig.getSheetHeaderIndex() == i){
+                if(sConfig.getSheetHeaderIndex() >= i){
                     headerFlag = false;
                     returnFlag = true;
                 }

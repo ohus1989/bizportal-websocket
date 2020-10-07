@@ -43,6 +43,10 @@ public enum ErrorType {
     ESIGNON_BODY_NOT_FOUND_EXCEPTION(27012, "esignon 응답에 바디 값이 없습니다.", "esignon 응답에 http body 구성은 헤더, 바디가 포함된 map 형태입니다.", "ESIGNON_BODY_NOT_FOUND_EXCEPTION"),
     ESIGNON_RESULT_FAIL_EXCEPTION(27013, "esignon 정상요청이 아닙니다.", "esignon 정상요청이 아닙니다.", "ESIGNON_RESULT_FAIL_EXCEPTION"),
 
+    // 28000~ excel Error
+    EXCEL_BANK_CODE_IS_NULL_EXCEPTION(28001, "Bank 코드가 없습니다.", "Bank 코드가 없습니다.", "EXCEL_BANK_CODE_IS_NULL_EXCEPTION"),
+    EXCEL_BANK_CODE_IS_NOT_MATCH_EXCEPTION(28001, "excel 포멧이 설정된 Bank 코드가 아닙니다.", "excel 포멧이 설정된 Bank 코드가 아닙니다.", "EXCEL_BANK_CODE_IS_NOT_MATCH_EXCEPTION"),
+
 
 
     // 90001~ default, unknown
