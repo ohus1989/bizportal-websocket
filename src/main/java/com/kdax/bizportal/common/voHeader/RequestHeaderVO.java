@@ -7,4 +7,5 @@ import lombok.Setter;
 @Setter
 public class RequestHeaderVO {
     private String userSpecificKey = "";
+    private String createId;
 }
