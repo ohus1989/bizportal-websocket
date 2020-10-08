@@ -205,6 +205,8 @@ public class RestTemplateUtil {
     }
 
     public HashMap<String, Object> doPOST(String url , Map<String, String> parameters,HttpHeaders headers) {
+        log.info("doPost url{}\nheaders{}\nparameters{}\n",url,headers,parameters);
+
         HashMap<String, Object> result = new HashMap<String, Object>();
         try {
         RestTemplate restTemplate = createRestTemplate();
