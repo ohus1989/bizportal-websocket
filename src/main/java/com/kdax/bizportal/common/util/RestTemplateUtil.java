@@ -204,23 +204,24 @@ public class RestTemplateUtil {
 
     }
 
-    public HashMap<String, Object> doPOST(String url , Map<String, String> parameters,HttpHeaders headers) {
-        log.info("doPost url{}\nheaders{}\nparameters{}\n",url,headers,parameters);
+    public HashMap<String, Object> doPOST(String url, Map<String, String> parameters, HttpHeaders headers) {
+        log.info("doPost url{}\nheaders{}\nparameters{}\n", url, headers, parameters);
 
         HashMap<String, Object> result = new HashMap<String, Object>();
         try {
-        RestTemplate restTemplate = createRestTemplate();
-        ResponseEntity<Map> resultMap = null;
+            RestTemplate restTemplate = createRestTemplate();
+            ResponseEntity<Map> resultMap = null;
 
-        HttpEntity formEntity = new HttpEntity(parameters, headers);
+            HttpEntity formEntity = new HttpEntity(parameters, headers);
 
-        resultMap=restTemplate.exchange(url, HttpMethod.POST, formEntity, Map.class);
+            resultMap = restTemplate.exchange(url, HttpMethod.POST, formEntity, Map.class);
 
-            if(resultMap !=null){
+            log.info("doPOST resultMap\n{}", resultMap);
+            if (resultMap != null) {
                 result.put("statusCode", resultMap.getStatusCodeValue());
                 result.put("header", resultMap.getHeaders());
                 result.put("body", resultMap.getBody());
-            }else{
+            } else {
                 throw new Exception();
             }
 
