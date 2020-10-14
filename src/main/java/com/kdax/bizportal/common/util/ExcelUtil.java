@@ -106,7 +106,16 @@ public class ExcelUtil {
                             data.put(createColName(sConfig,j),"");
                             break;
                         default:
-                            data.put(createColName(sConfig,j),"");
+                            if(createColName(sConfig,j).indexOf(preColname)<0){
+                                int createDataFormat = row.getCell(j).getCellStyle().getDataFormat();
+                                if(createDataFormat ==4){
+                                    data.put(createColName(sConfig,j),row.getCell(j).getNumericCellValue());
+                                }else{
+                                    data.put(createColName(sConfig,j),"");
+                                }
+                            }else{
+                                data.put(createColName(sConfig,j),"");
+                            }
                             break;
                     }
                 }
