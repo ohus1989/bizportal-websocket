@@ -14,6 +14,7 @@ public enum ErrorType {
     NOT_INPUT_FILE(21007, "파일을 등록해주세요.", " not input file", "NOT_INPUT_FILE"),
     REGIST_USEREINTO_ERROR(21008, "사용자 정보 등록 에러", "regist userinfo, error", "REGIST_USEREINTO_ERROR"),
     IO_EXCEPTION(21009, "IO exception", " IOException. Please contact the manager.", "IO_EXCEPTION"),
+    INVALID_IDPASSWORD(21010, "존재하지 않는 아이디이거나, 잘못된 비밀번호입니다.", "Invalid id / password", "INVALID_IDPASSWORD"),
 
 
     // 22000 ~  auth, role
