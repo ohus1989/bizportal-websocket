@@ -1,18 +1,21 @@
 package com.kdax.bizportal.common.util;
 
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 @UtilityClass
+@Slf4j
 public class MethodUtil {
-    public static void setMethod(Object domain, Map<String, ?> map, String escapeKey){
 
-        Field[] fields = domain.getClass().getDeclaredFields();
+    private static final String SET_TXT = "=====>set";
+
+    public static void setMethod(Object domain, Map<String, ?> map, String escapeKey){
 
         Set<String> keySet = map.keySet();
         Iterator<String> iterator = keySet.iterator();
@@ -20,60 +23,35 @@ public class MethodUtil {
         Object value = null;
 
         String newColumnName = null;
-//        Method method = null;
 
         while (iterator.hasNext()) {
-            try{
-                key = iterator.next();
+            key = iterator.next();
 
-                if(escapeKey != null){
-                    if(key.equals(escapeKey)){
-                        continue;
-                    }
+            if (escapeKey != null && key.equals(escapeKey)) {
+                continue;
+            }
+
+            value = map.get(key);
+
+            newColumnName = TypeConvertUtil.firstOnlyUpperCase(key);
+
+            try {
+                if (value instanceof java.lang.String) {
+                    methodInvoke(domain, value, newColumnName, String.class);
+                } else if (value instanceof java.lang.Integer) {
+                    methodInvoke(domain, value, newColumnName, int.class);
+                } else if (value instanceof java.lang.Double) {
+                    methodInvoke(domain, value, newColumnName, double.class);
+                } else if (value instanceof java.util.Date) {
+                    methodInvoke(domain, value, newColumnName, java.util.Date.class);
                 }
-
-                value = map.get(key);
-
-                newColumnName = TypeConvertUtil.firstOnlyUpperCase(key);
-
-                if(value instanceof java.lang.String){
-                    try{
-                        methodInvoke(domain, value, newColumnName, String.class);
-                    }catch(Exception e){
-                        System.out.println("=====>set" + newColumnName + "(String) err");
-                    }
-                }
-
-                if(value instanceof java.lang.Integer){
-                    try{
-                        methodInvoke(domain, value, newColumnName, int.class);
-                    }catch(Exception e){
-                        System.out.println("=====>set" + newColumnName + "(Integer) err");
-                    }
-                }
-
-                if(value instanceof java.lang.Double){
-                    try{
-                        methodInvoke(domain, value, newColumnName, double.class);
-                    }catch(Exception e){
-                        System.out.println("=====>set" + newColumnName + "(Double) err");
-                    }
-                }
-
-                if(value instanceof java.util.Date){
-                    try{
-                        methodInvoke(domain, value, newColumnName, java.util.Date.class);
-                    }catch(Exception e){
-                        System.out.println("=====>set" + newColumnName + "(Date) err");
-                    }
-                }
-            }catch(Exception e){
-                System.out.println("=====>set" + key + "() err");
+            } catch (Exception e) {
+                log.error("{} {} ({}) err", SET_TXT, newColumnName, value.getClass());
             }
         }
     }
 
-    private void methodInvoke(Object domain, Object value, String newColumnName, Class clazz ) throws Exception{
+    private void methodInvoke(Object domain, Object value, String newColumnName, Class clazz ) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Method method = null;
         method =  domain.getClass().getMethod(
                 "set" + newColumnName,

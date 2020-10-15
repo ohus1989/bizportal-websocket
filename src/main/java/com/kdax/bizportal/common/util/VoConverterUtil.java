@@ -49,7 +49,7 @@ public class VoConverterUtil {
         for (Field tmpField : vo.getDeclaredFields()) {
             String val = (String)getValueFromField(tmpField, vo, paramObj);
             if(val!=null && !val.equals(""))
-            paramMap.add(tmpField.getName(), val);
+                paramMap.add(tmpField.getName(), val);
             log.debug("Field Name : " + tmpField.getName() + "Field Value : " + val);
         }
 

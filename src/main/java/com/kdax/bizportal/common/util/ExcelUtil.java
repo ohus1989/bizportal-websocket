@@ -11,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +19,7 @@ import java.util.Map;
 
 @UtilityClass
 public class ExcelUtil {
-    private static final String preColname = "col_";
+    private static final String PRE_COLNAME = "col_";
 
     public static List fileToList(MultipartFile file) throws Exception{
         return fileToList(file, ExcelUtilConfig.builder().build());
@@ -32,17 +31,7 @@ public class ExcelUtil {
 
         String extension = FilenameUtils.getExtension(file.getOriginalFilename()); // 3
 
-        if (!extension.equals("xlsx") && !extension.equals("xls")) {
-            throw new IOException("엑셀파일만 업로드 해주세요.");
-        }
-
-        Workbook workbook = null;
-
-        if (extension.equals("xlsx")) {
-            workbook = new XSSFWorkbook(file.getInputStream());
-        } else if (extension.equals("xls")) {
-            workbook = new HSSFWorkbook(file.getInputStream());
-        }
+        Workbook workbook = getSheets(file, extension);
 
         for(int sIndex =0; sIndex < workbook.getNumberOfSheets(); sIndex++){
             //config
@@ -71,55 +60,7 @@ public class ExcelUtil {
                     continue;
                 }
 
-                Map data = new HashMap();
-                for(int j = 0; j < row.getLastCellNum();j++){
-                    if(row.getCell(j) ==null){
-                        data.put(createColName(sConfig,j),"");
-                        continue;
-                    }
-                    CellType ctype = row.getCell(j).getCellType();
-                    switch (ctype){
-                        case STRING:
-
-                            data.put(createColName(sConfig,j),row.getCell(j).getStringCellValue());
-                            break;
-                        case NUMERIC:
-                            //cell style format get (doc이 나오는 데이터와 상이 하므로 추후 수정 가능
-                            int dataFormat = row.getCell(j).getCellStyle().getDataFormat();
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-                            if(dataFormat ==20 || dataFormat ==21){
-                                data.put(createColName(sConfig,j), row.getCell(j).getLocalDateTimeCellValue().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-                                break;
-                            }else if(DateUtil.isCellDateFormatted(row.getCell(j)) || dataFormat ==14 || dataFormat ==55 || dataFormat ==178){
-                                // 기존 date format
-                                // excel style 중 선별
-                                data.put(createColName(sConfig,j),dateFormat.format(row.getCell(j).getDateCellValue()));
-                                break;
-                            }else{
-                                data.put(createColName(sConfig,j),row.getCell(j).getNumericCellValue());
-                                break;
-                            }
-                        case BOOLEAN:
-                            data.put(createColName(sConfig,j),row.getCell(j).getBooleanCellValue());
-                            break;
-                        case BLANK:
-                            data.put(createColName(sConfig,j),"");
-                            break;
-                        default:
-                            if(createColName(sConfig,j).indexOf(preColname)<0){
-                                int createDataFormat = row.getCell(j).getCellStyle().getDataFormat();
-                                if(createDataFormat ==4){
-                                    data.put(createColName(sConfig,j),row.getCell(j).getNumericCellValue());
-                                }else{
-                                    data.put(createColName(sConfig,j),"");
-                                }
-                            }else{
-                                data.put(createColName(sConfig,j),"");
-                            }
-                            break;
-                    }
-                }
-                dataList.add(data);
+                dataListSetToCellData(sConfig, dataList, row);
             }
 
             sheetMap.put("SHEET_NAME",worksheet.getSheetName());
@@ -130,11 +71,82 @@ public class ExcelUtil {
         return returnList;
     }
 
+    private void dataListSetToCellData(ExcelSheetConfig sConfig, List<Map> dataList, Row row) {
+        Map data = new HashMap();
+        for(int j = 0; j < row.getLastCellNum(); j++){
+            if(row.getCell(j) ==null){
+                data.put(createColName(sConfig,j),"");
+                continue;
+            }
+            setDataByCellType(sConfig, row, data, j);
+        }
+        dataList.add(data);
+    }
+
+    private void setDataByCellType(ExcelSheetConfig sConfig, Row row, Map data, int j) {
+        CellType ctype = row.getCell(j).getCellType();
+        switch (ctype){
+            case STRING:
+
+                data.put(createColName(sConfig, j), row.getCell(j).getStringCellValue());
+                break;
+            case NUMERIC:
+                //cell style format get (doc이 나오는 데이터와 상이 하므로 추후 수정 가능
+                int dataFormat = row.getCell(j).getCellStyle().getDataFormat();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+                if(dataFormat ==20 || dataFormat ==21){
+                    data.put(createColName(sConfig, j), row.getCell(j).getLocalDateTimeCellValue().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                    break;
+                }else if(DateUtil.isCellDateFormatted(row.getCell(j)) || dataFormat ==14 || dataFormat ==55 || dataFormat ==178){
+                    // 기존 date format
+                    // excel style 중 선별
+                    data.put(createColName(sConfig, j),dateFormat.format(row.getCell(j).getDateCellValue()));
+                    break;
+                }else{
+                    data.put(createColName(sConfig, j), row.getCell(j).getNumericCellValue());
+                    break;
+                }
+            case BOOLEAN:
+                data.put(createColName(sConfig, j), row.getCell(j).getBooleanCellValue());
+                break;
+            case BLANK:
+                data.put(createColName(sConfig, j),"");
+                break;
+            default:
+                if(createColName(sConfig, j).indexOf(PRE_COLNAME)<0){
+                    int createDataFormat = row.getCell(j).getCellStyle().getDataFormat();
+                    if(createDataFormat ==4){
+                        data.put(createColName(sConfig, j), row.getCell(j).getNumericCellValue());
+                    }else{
+                        data.put(createColName(sConfig, j),"");
+                    }
+                }else{
+                    data.put(createColName(sConfig, j),"");
+                }
+                break;
+        }
+    }
+
+    private Workbook getSheets(MultipartFile file, String extension) throws IOException {
+        if (!extension.equals("xlsx") && !extension.equals("xls")) {
+            throw new IOException("엑셀파일만 업로드 해주세요.");
+        }
+
+        Workbook workbook = null;
+
+        if (extension.equals("xlsx")) {
+            workbook = new XSSFWorkbook(file.getInputStream());
+        } else if (extension.equals("xls")) {
+            workbook = new HSSFWorkbook(file.getInputStream());
+        }
+        return workbook;
+    }
+
     private String createColName(ExcelSheetConfig config, int index){
         if(config != null && config.getSheetHeaders() != null && config.getSheetHeaders().get(index) !=null && !config.getSheetHeaders().get(index).toString().equals("")){
             return config.getSheetHeaders().get(index).toString();
         }else{
-            return preColname+String.format("%03d",index);
+            return PRE_COLNAME +String.format("%03d",index);
         }
     }
 

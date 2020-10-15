@@ -27,6 +27,10 @@ import java.util.Map;
 @UtilityClass
 public class RestTemplateUtil {
 
+    private static final String STATUS_CODE = "statusCode";
+    private static final String HEADER = "header";
+    private static final String BODY = "body";
+
     /**
      * restTemplate exchange
      *
@@ -50,16 +54,16 @@ public class RestTemplateUtil {
 
             ResponseEntity<Map> resultMap = restTemplate.exchange(uri.toString(), httpMethod, entity, Map.class);
 
-            result.put("statusCode", resultMap.getStatusCodeValue());
-            result.put("header", resultMap.getHeaders());
-            result.put("body", resultMap.getBody());
+            result.put(STATUS_CODE, resultMap.getStatusCodeValue());
+            result.put(HEADER, resultMap.getHeaders());
+            result.put(BODY, resultMap.getBody());
 
         } catch (HttpClientErrorException | HttpServerErrorException e) {
-            result.put("statusCode", e.getRawStatusCode());
-            result.put("body", e.getStatusText());
+            result.put(STATUS_CODE, e.getRawStatusCode());
+            result.put(BODY, e.getStatusText());
         } catch (Exception e) {
-            result.put("statusCode", "999");
-            result.put("body", e.getMessage());
+            result.put(STATUS_CODE, "999");
+            result.put(BODY, e.getMessage());
         }
 
         return result;
@@ -116,19 +120,19 @@ public class RestTemplateUtil {
             }
 
             if(resultMap !=null){
-                result.put("statusCode", resultMap.getStatusCodeValue());
-                result.put("header", resultMap.getHeaders());
-                result.put("body", resultMap.getBody());
+                result.put(STATUS_CODE, resultMap.getStatusCodeValue());
+                result.put(HEADER, resultMap.getHeaders());
+                result.put(BODY, resultMap.getBody());
             }else{
                 throw new Exception();
             }
 
         } catch (HttpClientErrorException | HttpServerErrorException e) {
-            result.put("statusCode", e.getRawStatusCode());
-            result.put("body", e.getStatusText());
+            result.put(STATUS_CODE, e.getRawStatusCode());
+            result.put(BODY, e.getStatusText());
         } catch (Exception e) {
-            result.put("statusCode", "999");
-            result.put("body", e.getMessage());
+            result.put(STATUS_CODE, "999");
+            result.put(BODY, e.getMessage());
         }
 
         return result;
@@ -218,19 +222,19 @@ public class RestTemplateUtil {
 
             log.info("doPOST resultMap\n{}", resultMap);
             if (resultMap != null) {
-                result.put("statusCode", resultMap.getStatusCodeValue());
-                result.put("header", resultMap.getHeaders());
-                result.put("body", resultMap.getBody());
+                result.put(STATUS_CODE, resultMap.getStatusCodeValue());
+                result.put(HEADER, resultMap.getHeaders());
+                result.put(BODY, resultMap.getBody());
             } else {
                 throw new Exception();
             }
 
         } catch (HttpClientErrorException | HttpServerErrorException e) {
-            result.put("statusCode", e.getRawStatusCode());
-            result.put("body", e.getStatusText());
+            result.put(STATUS_CODE, e.getRawStatusCode());
+            result.put(BODY, e.getStatusText());
         } catch (Exception e) {
-            result.put("statusCode", "999");
-            result.put("body", e.getMessage());
+            result.put(STATUS_CODE, "999");
+            result.put(BODY, e.getMessage());
         }
         return result;
     }

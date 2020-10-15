@@ -72,6 +72,6 @@ public class ExcelSheetConfig {
         }
 
         if(config.getSheetHeaders() !=null)
-        this.sheetHeaders = config.getSheetHeaders().get(index);
+            this.sheetHeaders = config.getSheetHeaders().get(index);
     }
 }
