@@ -1,14 +1,6 @@
 package com.kdax.bizportal.common.util;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -804,43 +796,33 @@ public class SeedCipher {
 	
 	
 	public boolean encryptFile(String key, String path, String destPath){
-		
-        int len;
-        int size = 4096;
-        byte[] data = new byte[size];
-        try {
-			File inF = new File(path);		
-			File outF = new File(destPath);
-			
-		    FileInputStream fis = new FileInputStream(inF);
-		    BufferedInputStream bis = new BufferedInputStream(fis);    
-			
-		    FileOutputStream fos = new FileOutputStream(outF);
-		    BufferedOutputStream bos = new BufferedOutputStream(fos);
-		    
-			while ((len = bis.read(data)) != -1) {	
-				
+
+		int len;
+		int size = 4096;
+		byte[] data = new byte[size];
+		File inF = new File(path);
+		File outF = new File(destPath);
+		try (
+				BufferedInputStream bis = new BufferedInputStream(new FileInputStream(inF));
+				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(outF))
+		) {
+
+
+			while ((len = bis.read(data)) != -1) {
+
 				byte[] encData2 = new byte[len];
-    			System.arraycopy(data, 0, encData2, 0, len);
-	    		//System.out.println("encData.length :: "+ encData.length);
-	    		//System.out.println("read :: "+ read);
-	    		byte[] writeByte = encrypt(encData2, key.getBytes());
-	    		//System.out.println("writeByte.length :: "+ writeByte.length);
-	    		bos.write(writeByte, 0, writeByte.length);
+				System.arraycopy(data, 0, encData2, 0, len);
+				byte[] writeByte = encrypt(encData2, key.getBytes());
+				bos.write(writeByte, 0, writeByte.length);
 			}
-			
-	        bos.flush();	        
-	        bis.close();
-	        fis.close();
-	        bos.close();
-	        fos.close();
-			
+
+			bos.flush();
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
 		}
-
 		
 		return true;
 	}
@@ -851,17 +833,15 @@ public class SeedCipher {
         int len;
         int size = 4096;
         byte[] data = new byte[size];
-        
-        try {
-			File inF = new File(path);		
-			File outF = new File(destPath);
-			
-		    FileInputStream fis = new FileInputStream(inF);
-		    BufferedInputStream bis = new BufferedInputStream(fis);    
-			
-		    FileOutputStream fos = new FileOutputStream(outF);
-		    BufferedOutputStream bos = new BufferedOutputStream(fos);
-		    
+
+		File inF = new File(path);
+		File outF = new File(destPath);
+
+		try (
+				BufferedInputStream bis = new BufferedInputStream(new FileInputStream(inF));
+				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(outF))
+		) {
+
 			while ((len = bis.read(data)) != -1) {		
 				byte[] encData = new byte[len];
     			System.arraycopy(data, 0, encData, 0, len);
@@ -880,11 +860,7 @@ public class SeedCipher {
 		    	}
 			}
 			
-	        bos.flush();	        
-	        bis.close();
-	        fis.close();
-	        bos.close();
-	        fos.close();
+	        bos.flush();
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
