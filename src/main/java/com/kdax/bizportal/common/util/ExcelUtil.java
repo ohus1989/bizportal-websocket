@@ -32,8 +32,10 @@ public class ExcelUtil {
         String extension = FilenameUtils.getExtension(file.getOriginalFilename()); // 3
 
         Workbook workbook = getSheets(file, extension);
+        // 1번 시트만 사용
 
-        for(int sIndex =0; sIndex < workbook.getNumberOfSheets(); sIndex++){
+        for(int sIndex =0; sIndex < 1; sIndex++){
+//        for(int sIndex =0; sIndex < workbook.getNumberOfSheets(); sIndex++){
             //config
             ExcelSheetConfig sConfig = new ExcelSheetConfig(config , sIndex);
 
