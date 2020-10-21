@@ -1,5 +1,6 @@
 package com.kdax.bizportal.common.session;
 
+import com.google.gson.Gson;
 import com.kdax.bizportal.common.annotation.AcessScope;
 import com.kdax.bizportal.common.constants.GlobalConstants;
 import com.kdax.bizportal.common.enums.AccessScopeType;
@@ -19,9 +20,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import com.google.gson.Gson;
 import org.springframework.util.StringUtils;
-
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
@@ -39,8 +38,11 @@ public class VerifyToken {
     @Value("${bizportal.domain.smkey}")
     private String bizportalDomainSmKey;
 
-    @Value("${bizportal.auth.token.expire.minute}")
-    private int expireMinute;
+    @Value("${bizportal.auth.token.android.expire.minute}")
+    private int androidExpireMinute;
+
+    @Value("${bizportal.auth.token.web.expire.minute}")
+    private int webExpireMinute;
 
     @Value("${bizportal.auth.default.flag}")
     private boolean authDefaultFlag;
@@ -166,9 +168,18 @@ public class VerifyToken {
 
         try{
             SeedCipher sc = new SeedCipher();
+
+            //TUser-Agent 체크하여 시간 설정
+            String userAgent = request.getHeader("User-Agent");
+            log.info("User-Agent:\n{}",userAgent);
+
             Calendar cal = Calendar.getInstance();
             cal.setTime(new Date());
-            cal.add(Calendar.MINUTE, expireMinute);
+            if(userAgent!=null&&userAgent.indexOf("Android")>-1){
+                cal.add(Calendar.MINUTE, androidExpireMinute);
+            }else{
+                cal.add(Calendar.MINUTE, webExpireMinute);
+            }
 
             authTokenVO.setUserCodeId(userInfoVO.getCodeId() );
             authTokenVO.setUserLevel("DEV");  // 향후 사용 여부 확인
