@@ -23,6 +23,7 @@ public class GlobalConstants {
     public static final String ESIGNON_STATUS = "ESIGNON-access-status";
     public static final String ESIGNON_STATUS_SUCCESS = "SUCCESS";
     public static final String ESIGNON_STATUS_FAIL = "FAIL";
+    public static final String ESIGNON_EMAIL = "ESIGNON-email";
     /* esignon API URL*/
     public static final String ESIGNON_DOMAIN = "https://docs.esignon.net";
     public static final String ESIGNON_GET_TOKEN_API =ESIGNON_DOMAIN+"/api/{companyId}/login";
