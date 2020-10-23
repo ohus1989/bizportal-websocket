@@ -27,4 +27,8 @@ public class UserVO {
     private String eSignOnId;
     private String eSignOnPwd;
     private String fcmToken;
+    private String deptCode;
+    private String officersNumber;
+    private String rcmndNumber;
+
 }
