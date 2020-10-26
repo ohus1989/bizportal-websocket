@@ -10,6 +10,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -105,7 +106,8 @@ public class ExcelUtil {
                     data.put(createColName(sConfig, j),dateFormat.format(row.getCell(j).getDateCellValue()));
                     break;
                 }else{
-                    data.put(createColName(sConfig, j), row.getCell(j).getNumericCellValue());
+                    BigDecimal tempBig = new BigDecimal(row.getCell(j).getNumericCellValue());
+                    data.put(createColName(sConfig, j), tempBig.toString());
                     break;
                 }
             case BOOLEAN:
