@@ -74,6 +74,43 @@ public class ExcelUtil {
         return returnList;
     }
 
+    public String getColumnData(MultipartFile file, ExcelUtilConfig config) throws Exception{
+        String returnStr = "";
+
+        String extension = FilenameUtils.getExtension(file.getOriginalFilename()); // 3
+
+        Workbook workbook = getSheets(file, extension);
+        // 1번 시트만 사용
+        List<Integer> accountList;
+        if(config !=null && config.getSheetAccountIndex() != null){
+            accountList = config.getSheetAccountIndex();
+        }else{
+            return returnStr;
+        }
+        if(accountList.isEmpty() || accountList.size()==0 || accountList.size()!=2){
+            return returnStr;
+        }
+
+        for(int sIndex =0; sIndex < 1; sIndex++){
+            ExcelSheetConfig sConfig = new ExcelSheetConfig(config , sIndex);
+
+            List<Map> dataList = new ArrayList<>();
+            Map sheetMap = new HashMap();
+            Sheet worksheet = workbook.getSheetAt(sIndex);
+
+            Cell targetCell = worksheet.getRow(accountList.get(0)).getCell(accountList.get(1));
+
+            CellType ctype = targetCell.getCellType();
+            if(ctype.equals(CellType.STRING)){
+                return targetCell.getStringCellValue();
+            }else{
+                return returnStr;
+            }
+        }
+
+        return returnStr;
+    }
+
     private void dataListSetToCellData(ExcelSheetConfig sConfig, List<Map> dataList, Row row) {
         Map data = new HashMap();
         for(int j = 0; j < row.getLastCellNum(); j++){
@@ -90,7 +127,6 @@ public class ExcelUtil {
         CellType ctype = row.getCell(j).getCellType();
         switch (ctype){
             case STRING:
-
                 data.put(createColName(sConfig, j), row.getCell(j).getStringCellValue());
                 break;
             case NUMERIC:

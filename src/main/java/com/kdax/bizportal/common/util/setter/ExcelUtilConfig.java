@@ -1,6 +1,7 @@
 package com.kdax.bizportal.common.util.setter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,7 +35,9 @@ public class ExcelUtilConfig {
 
     private List<List<String>> sheetHeaders; //not exist return col_(col_index)
 
-    public ExcelUtilConfig(Boolean notIncludeAllSheetTitle, Boolean notIncludeAllSheetHeader, Boolean notIncludeAllSheetSummary, Boolean existAllSheetTitle, Boolean existAllSheetHeader, Boolean existAllSheetSummary, List<Integer> sheetTitleIndex, List<Integer> sheetHeaderIndex, List<Integer> sheetSummaryIndex, List<List<String>> sheetHeaders) {
+    private List<Integer> sheetAccountIndex;
+
+    public ExcelUtilConfig(Boolean notIncludeAllSheetTitle, Boolean notIncludeAllSheetHeader, Boolean notIncludeAllSheetSummary, Boolean existAllSheetTitle, Boolean existAllSheetHeader, Boolean existAllSheetSummary, List<Integer> sheetTitleIndex, List<Integer> sheetHeaderIndex, List<Integer> sheetSummaryIndex, List<List<String>> sheetHeaders,  List<Integer> sheetAccountIndex) {
         this.notIncludeAllSheetTitle = notIncludeAllSheetTitle;
         this.notIncludeAllSheetHeader = notIncludeAllSheetHeader;
         this.notIncludeAllSheetSummary = notIncludeAllSheetSummary;
@@ -45,6 +48,7 @@ public class ExcelUtilConfig {
         this.sheetHeaderIndex = sheetHeaderIndex;
         this.sheetSummaryIndex = sheetSummaryIndex;
         this.sheetHeaders = sheetHeaders;
+        this.sheetAccountIndex = sheetAccountIndex;
     }
 
     public void setSheetHeaders(String sheetHeaders) throws Exception{
