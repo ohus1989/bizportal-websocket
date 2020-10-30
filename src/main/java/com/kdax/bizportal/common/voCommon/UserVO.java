@@ -31,5 +31,7 @@ public class UserVO {
     private String officersNumber;
     private String rcmndNumber;
     private String branchName;
+    private String workType;
+    private String jobCode;
 
 }
