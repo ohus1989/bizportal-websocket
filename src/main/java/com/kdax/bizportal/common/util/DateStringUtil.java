@@ -898,5 +898,22 @@ public class DateStringUtil {
         cal.add(Calendar.DATE,+1);
         return sdformat.format(cal.getTime());
     }
-
+    /**
+     * 포맷 검사
+     *
+     * @return : boolean
+     */
+    public static boolean isValidFormat(String format, String value) {
+        Date date = null;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat(format);
+            date = sdf.parse(value);
+            if (!value.equals(sdf.format(date))) {
+                date = null;
+            }
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        }
+        return date != null;
+    }
 }
