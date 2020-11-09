@@ -44,6 +44,9 @@ public enum ErrorType {
     KAKAO_NON_TEMPLATE(27100, "등록된 템플릿이 아닙니다.", "등록된 템플릿이 아닙니다.", "KAKAO_NON_TEMPLATE"),
     KAKAO_NOT_COMPLATE(27101, "완료된 문서가 아닙니다.", "완료된 문서가 아닙니다.", "KAKAO_NOT_COMPLATE"),
 
+    // 27200~ email
+    EMAIL_NON_TEMPLATE(27200, "등록된 템플릿이 아닙니다.", "등록된 템플릿이 아닙니다.", "EMAIL_NON_TEMPLATE"),
+
     // 28000~ excel Error
     EXCEL_BANK_CODE_IS_NULL_EXCEPTION(28001, "Bank 코드가 없습니다.", "Bank 코드가 없습니다.", "EXCEL_BANK_CODE_IS_NULL_EXCEPTION"),
     EXCEL_BANK_CODE_IS_NOT_MATCH_EXCEPTION(28001, "excel 포멧이 설정된 Bank 코드가 아닙니다.", "excel 포멧이 설정된 Bank 코드가 아닙니다.", "EXCEL_BANK_CODE_IS_NOT_MATCH_EXCEPTION"),
