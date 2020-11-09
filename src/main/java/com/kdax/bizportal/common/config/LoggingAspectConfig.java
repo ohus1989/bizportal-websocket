@@ -7,6 +7,7 @@ import com.kdax.bizportal.common.exception.GlobalExceptionHandler;
 import com.kdax.bizportal.common.voCommon.LogComVO;
 import com.kdax.bizportal.common.voCommon.LogReqVO;
 import com.kdax.bizportal.common.voCommon.LogResVO;
+import com.kdax.bizportal.common.voHeader.ActionResultVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -89,7 +90,7 @@ public class LoggingAspectConfig {
     public Object doLogging(ProceedingJoinPoint pjp) throws Throwable {
         String lockENV = env.getProperty("spring.profiles.active");
 //        MDC.put("txid", UUID.randomUUID().toString());
-        String txid = String.format("%s%s", lockENV, LocalDateTime.now()
+        String txid = String.format("%s%s", lockENV.toUpperCase().substring(0, 3), LocalDateTime.now()
                 .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")));
         MDC.put("txid", txid);
 
@@ -116,7 +117,7 @@ public class LoggingAspectConfig {
 
             logReqVO.setHeaders(headerMap);
 
-            if(headerMap.get("Content-Type")!=null && headerMap.get("Content-Type").toString().contains(APPLICATION_JSON_VALUE)){
+            if (headerMap.get("Content-Type") != null && headerMap.get("Content-Type").toString().contains(APPLICATION_JSON_VALUE)) {
                 logReqVO.setBody(IOUtils.toString(request.getReader()));
             }
 
@@ -129,8 +130,8 @@ public class LoggingAspectConfig {
                 params = " [" + paramMapToString(paramMap) + "]";
             }
 
-        }catch (Exception e){
-            log.error("logging error::{}",e);
+        } catch (Exception e) {
+            log.error("logging LogReqVO error::{}", e);
         }
 
 //        log.info("Logging START logReqVO::{}", gson.toJson(logReqVO));
@@ -143,7 +144,7 @@ public class LoggingAspectConfig {
         } catch (BizExceptionMessage ex) {
             reobj = globalExceptionHandler.BizExceptionMessageHandler(ex);
             throw ex;
-        }catch (Exception e) {
+        } catch (Exception e) {
 
             Signature sig = pjp.getSignature();
             Object[] args = pjp.getArgs();
@@ -152,24 +153,42 @@ public class LoggingAspectConfig {
             log.error("exception within " + location, e);
             throw e;
         } finally {
-            Map resHeaders = response.getHeaderNames().stream().collect(Collectors.toMap(Function.identity(),
-                    h -> new ArrayList<>(response.getHeaders(h)), (oldValue, newValue) -> newValue, HttpHeaders::new));
+            try {
+                Map resHeaders = response.getHeaderNames().stream().collect(Collectors.toMap(Function.identity(),
+                        h -> new ArrayList<>(response.getHeaders(h)), (oldValue, newValue) -> newValue, HttpHeaders::new));
 
-            long end = System.currentTimeMillis();
-            LogResVO logResVO = new LogResVO();
-            logResVO.setTxid(txid);
-            logResVO.setBody(reobj);
-            logResVO.setStatus(response.getStatus());
-            logResVO.setContentType(response.getContentType());
-            logResVO.setHeaders(resHeaders);
-            logResVO.setResponseTime(end - start);
+                long end = System.currentTimeMillis();
+                LogResVO logResVO = new LogResVO();
+                logResVO.setTxid(txid);
+                long contentsLength = gson.toJson(reobj).length();
+                if (contentsLength > 1000) {
+                    Map item = new HashMap();
+                    item.put("contentsLength", contentsLength);
+                    if (((ActionResultVO) reobj).getResultVO() instanceof List) {
+                        List reslist = ((List) ((ActionResultVO) reobj).getResultVO());
+                        int listSize = reslist.size();
+                        item.put("listSize", listSize);
+                        item.put("list0", reslist.get(0));
+                    }
+                    logResVO.setBody(item);
+                } else {
+                    logResVO.setBody(reobj);
+                }
 
-            LogComVO logComVO = new LogComVO();
-            logComVO.setRequest(logReqVO);
-            logComVO.setResponse(logResVO);
+                logResVO.setStatus(response.getStatus());
+                logResVO.setContentType(response.getContentType());
+                logResVO.setHeaders(resHeaders);
+                logResVO.setResponseTime(end - start);
+
+                LogComVO logComVO = new LogComVO();
+                logComVO.setRequest(logReqVO);
+                logComVO.setResponse(logResVO);
 
 //        log.info("Logging END logResVO::{}", gson.toJson(logResVO));
-            log.info("Logging END logComVO::{}", gson.toJson(logComVO));
+                log.info("Logging END logComVO::{}", gson.toJson(logComVO));
+            } catch (Exception e) {
+                log.error("logging logResVO error::{}", e);
+            }
 
         }
 
