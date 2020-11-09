@@ -164,7 +164,8 @@ public class LoggingAspectConfig {
                 if (contentsLength > 1000) {
                     Map item = new HashMap();
                     item.put("contentsLength", contentsLength);
-                    if (((ActionResultVO) reobj).getResultVO() instanceof List) {
+                    if (reobj instanceof ActionResultVO &&
+                            ((ActionResultVO) reobj).getResultVO() instanceof List) {
                         List reslist = ((List) ((ActionResultVO) reobj).getResultVO());
                         int listSize = reslist.size();
                         item.put("listSize", listSize);
