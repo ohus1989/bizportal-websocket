@@ -15,6 +15,7 @@ public enum ErrorType {
     REGIST_USEREINTO_ERROR(21008, "사용자 정보 등록 에러", "regist userinfo, error", "REGIST_USEREINTO_ERROR"),
     IO_EXCEPTION(21009, "IO exception", " IOException. Please contact the manager.", "IO_EXCEPTION"),
     INVALID_IDPASSWORD(21010, "존재하지 않는 아이디이거나, 잘못된 비밀번호입니다.", "Invalid id / password", "INVALID_IDPASSWORD"),
+    NON_USER_RLOE(21011, "권한이 없습니다. 담당자에게 문의 바랍니다.", "NON_USER_RLOE", "NON_USER_RLOE"),
 
 
     // 22000 ~  auth, role
