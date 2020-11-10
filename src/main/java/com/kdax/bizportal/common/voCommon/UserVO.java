@@ -33,5 +33,6 @@ public class UserVO {
     private String branchName;
     private String workType;
     private String jobCode;
+    private String jobCodeName;
 
 }
