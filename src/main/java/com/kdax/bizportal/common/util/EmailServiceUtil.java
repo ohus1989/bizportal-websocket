@@ -27,7 +27,7 @@ public class EmailServiceUtil {
             messageHelper.setTo(to);
             messageHelper.setFrom(String.format("%s <%s>",senderName,senderAddress));
             messageHelper.setSubject(subject);
-            messageHelper.setText(content, false);
+            messageHelper.setText(content, true);
         };
         javaMailSender.send(message);
 
