@@ -12,4 +12,6 @@ public class LogResVO {
     private Object body;
     private String contentType;
     private long responseTime;
+    private int code;
+    private String message;
 }

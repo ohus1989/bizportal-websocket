@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import com.google.gson.Gson;
 import com.kdax.bizportal.common.exception.BizExceptionMessage;
 import com.kdax.bizportal.common.exception.GlobalExceptionHandler;
+import com.kdax.bizportal.common.exception.ServerErrorResponse;
 import com.kdax.bizportal.common.voCommon.LogComVO;
 import com.kdax.bizportal.common.voCommon.LogReqVO;
 import com.kdax.bizportal.common.voCommon.LogResVO;
@@ -16,6 +17,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -32,13 +34,16 @@ import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@Component // 1
-@Aspect // 2
+@Component
+@Aspect
 @Slf4j
 public class LoggingAspectConfig {
 
     @Autowired
     Environment env;
+
+    @Autowired
+    MessageSource messageSource;
 
     @Autowired
     GlobalExceptionHandler globalExceptionHandler;
@@ -142,7 +147,8 @@ public class LoggingAspectConfig {
             reobj = pjp.proceed(pjp.getArgs());// 6
             return reobj;
         } catch (BizExceptionMessage ex) {
-            reobj = globalExceptionHandler.BizExceptionMessageHandler(ex);
+            reobj = new ServerErrorResponse(ex);
+//            reobj = new ServerErrorResponse(ex.getMsgTypCod(),  ex.getErrorType(),messageSource.getMessage( ex.getErrorType().getMessageKey(), null, ex.getMsgLocale())  );
             throw ex;
         } catch (Exception e) {
 
