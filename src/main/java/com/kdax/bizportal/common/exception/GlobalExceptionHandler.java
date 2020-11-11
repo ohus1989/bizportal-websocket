@@ -48,6 +48,7 @@ public class GlobalExceptionHandler {
 
             LogReqVO logReqVO = new LogReqVO();
             LogResVO logResVO = new LogResVO();
+            LogComVO logComVO = new LogComVO();
 
             try {
                 logReqVO.setReqUri(request.getRequestURI());
@@ -72,8 +73,12 @@ public class GlobalExceptionHandler {
             } finally {
                 logResVO.setCode(ge.getCode());
                 logResVO.setMessage(ge.getMessage());
+
+                StackTraceElement traceElement = ge.getStackTrace()[0];
+                logComVO.setTraceElement(traceElement);
+
+//                logComVO.setBizExceptionMessage(ge);
             }
-            LogComVO logComVO = new LogComVO();
             logComVO.setRequest(logReqVO);
             logComVO.setResponse(logResVO);
 
