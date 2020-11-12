@@ -136,7 +136,7 @@ public class ExcelUtil {
                 if(dataFormat ==20 || dataFormat ==21){
                     data.put(createColName(sConfig, j), row.getCell(j).getLocalDateTimeCellValue().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
                     break;
-                }else if(DateUtil.isCellDateFormatted(row.getCell(j)) || dataFormat ==14 || dataFormat ==55 || dataFormat ==178){
+                }else if(DateUtil.isCellDateFormatted(row.getCell(j)) || dataFormat ==14 || dataFormat ==55 || (dataFormat ==178 && !createColName(sConfig, j).equals("coinQty"))){
                     // 기존 date format
                     // excel style 중 선별
                     data.put(createColName(sConfig, j),dateFormat.format(row.getCell(j).getDateCellValue()));
