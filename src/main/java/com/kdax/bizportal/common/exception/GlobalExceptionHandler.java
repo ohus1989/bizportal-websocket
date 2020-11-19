@@ -84,7 +84,7 @@ public class GlobalExceptionHandler {
 
             //ge.printStackTrace();
             log.warn("BizExceptionMessage trace ",ge);
-            log.error("## BizExceptionHandler:{}",new Gson().toJson(logComVO));
+            log.error("BizExceptionHandler::{}",new Gson().toJson(logComVO));
         }
 
         if(!isApiCall()){
