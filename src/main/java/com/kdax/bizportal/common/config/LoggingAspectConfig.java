@@ -3,8 +3,8 @@ package com.kdax.bizportal.common.config;
 import com.google.common.base.Joiner;
 import com.google.gson.Gson;
 import com.kdax.bizportal.common.exception.BizExceptionMessage;
-import com.kdax.bizportal.common.exception.GlobalExceptionHandler;
 import com.kdax.bizportal.common.exception.ServerErrorResponse;
+import com.kdax.bizportal.common.session.VerifyToken;
 import com.kdax.bizportal.common.voCommon.LogComVO;
 import com.kdax.bizportal.common.voCommon.LogReqVO;
 import com.kdax.bizportal.common.voCommon.LogResVO;
@@ -46,7 +46,7 @@ public class LoggingAspectConfig {
     MessageSource messageSource;
 
     @Autowired
-    GlobalExceptionHandler globalExceptionHandler;
+    VerifyToken verifyToken;
 
     Gson gson = new Gson();
 
@@ -190,6 +190,8 @@ public class LoggingAspectConfig {
                 LogComVO logComVO = new LogComVO();
                 logComVO.setRequest(logReqVO);
                 logComVO.setResponse(logResVO);
+
+                logComVO.setAuthTokenVO(verifyToken.getAuthTokenFromTokenHeader());
 
 //        log.info("Logging END logResVO::{}", gson.toJson(logResVO));
                 log.info("Logging END logComVO::{}", gson.toJson(logComVO));
