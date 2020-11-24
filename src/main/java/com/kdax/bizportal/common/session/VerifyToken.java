@@ -19,6 +19,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -49,6 +50,9 @@ public class VerifyToken {
 
     @Autowired
     HttpServletRequest request;
+
+    @Autowired
+    Environment env;
 
     public String makeToken(AuthTokenVO userInfo){
         String jwtString = Jwts.builder()
@@ -140,10 +144,14 @@ public class VerifyToken {
             //inputTokenVO.getUgpGrpCods() added, integrity check
             SeedCipher sc = new SeedCipher();
 
-            if(!authTokenVO.getUuid().equals(sc.SHA256(getRemoteIp() + authTokenVO.getUserLevel() ))){
-                log.warn("Token uui is invaliad! : {}", token);
-                throw new BizExceptionMessage(ErrorType.NOT_INVALID_TOKEN);
+            String lockENV = env.getProperty("spring.profiles.active");
+            if(!"local".equals(lockENV)) {
+                if (!authTokenVO.getUuid().equals(sc.SHA256(getRemoteIp() + authTokenVO.getUserLevel()))) {
+                    log.warn("Token uui is invaliad! : {}", token);
+                    throw new BizExceptionMessage(ErrorType.NOT_INVALID_TOKEN);
+                }
             }
+
             Calendar today = Calendar.getInstance();
             today.setTime(new Date());
 
