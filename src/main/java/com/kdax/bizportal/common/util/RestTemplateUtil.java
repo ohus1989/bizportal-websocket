@@ -8,8 +8,12 @@ import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -42,9 +46,10 @@ public class RestTemplateUtil {
     public HashMap<String, Object> restTemplateExchange(HttpMethod httpMethod, String url, String jsonMessage, HttpHeaders header) {
         HashMap<String, Object> result = new HashMap<String, Object>();
 
-        log.info("restTemplateExchange jsonMessage {}");
+        log.info("restTemplateExchange url::{},jsonMessage::{}",url,jsonMessage);
         try {
             RestTemplate restTemplate = createRestTemplate();
+            restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(Charset.forName("UTF-8")));
 
             //HttpHeaders header = new HttpHeaders();
             header.setContentType(MediaType.APPLICATION_JSON);
