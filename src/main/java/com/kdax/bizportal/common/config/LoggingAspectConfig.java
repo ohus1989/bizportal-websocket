@@ -113,6 +113,7 @@ public class LoggingAspectConfig {
 
             logReqVO.setReqUri(request.getRequestURI());
             logReqVO.setParameters(request.getParameterMap());
+            logReqVO.setArgs(pjp.getArgs());
 
             Map headerMap = new HashMap();
             for (Enumeration<String> e = request.getHeaderNames(); e.hasMoreElements(); ) {
@@ -121,22 +122,14 @@ public class LoggingAspectConfig {
             }
 
             logReqVO.setHeaders(headerMap);
+            logReqVO.setContentType(request.getContentType());
 
             if (headerMap.get("Content-Type") != null && headerMap.get("Content-Type").toString().contains(APPLICATION_JSON_VALUE)) {
                 logReqVO.setBody(IOUtils.toString(request.getReader()));
             }
 
-            logReqVO.setContentType(request.getContentType());
-
-
-            Map<String, String[]> paramMap = request.getParameterMap();
-            String params = "";
-            if (paramMap.isEmpty() == false) {
-                params = " [" + paramMapToString(paramMap) + "]";
-            }
-
         } catch (Exception e) {
-            log.error("logging LogReqVO error::{}", e);
+            log.debug("logging LogReqVO error::{}", e);
         }
 
 //        log.info("Logging START logReqVO::{}", gson.toJson(logReqVO));
@@ -156,7 +149,7 @@ public class LoggingAspectConfig {
             Object[] args = pjp.getArgs();
 
             String location = sig.getDeclaringTypeName() + '.' + sig.getName() + ", args=" + Arrays.toString(args);
-            log.error("exception within " + location, e);
+            log.debug("exception within " + location, e);
             throw e;
         } finally {
             try {
@@ -196,7 +189,7 @@ public class LoggingAspectConfig {
 //        log.info("Logging END logResVO::{}", gson.toJson(logResVO));
                 log.info("Logging END logComVO::{}", gson.toJson(logComVO));
             } catch (Exception e) {
-                log.error("logging logResVO error::{}", e);
+                log.debug("logging logResVO error::{}", e);
             }
 
         }

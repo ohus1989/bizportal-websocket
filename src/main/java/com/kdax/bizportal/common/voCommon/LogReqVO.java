@@ -15,4 +15,5 @@ public class LogReqVO {
     private String className;
     private String classMethod;
     private String contentType;
+    private Object[] args;
 }
