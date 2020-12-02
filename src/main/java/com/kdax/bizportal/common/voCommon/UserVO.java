@@ -34,5 +34,6 @@ public class UserVO {
     private String workType;
     private String jobCode;
     private String jobCodeName;
+    private String employeeNumber;
 
 }
