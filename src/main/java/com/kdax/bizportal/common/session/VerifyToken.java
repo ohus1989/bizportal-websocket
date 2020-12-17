@@ -220,6 +220,15 @@ public class VerifyToken {
         return ip;
     }
 
+    public String getUserCodeId(){
+        AuthTokenVO token = this.getAuthTokenFromTokenHeader();
+        if(token!=null){
+            return token.getUserCodeId();
+        }else{
+            return null;
+        }
+    }
+
     public AuthTokenVO getAuthTokenFromTokenHeader() {
         String token = request.getHeader(GlobalConstants.TOKEN_HEADER);
         if (token != null) {
