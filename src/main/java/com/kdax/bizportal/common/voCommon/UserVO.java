@@ -35,5 +35,6 @@ public class UserVO {
     private String jobCode;
     private String jobCodeName;
     private String employeeNumber;
+    private String passwordChangeDate;
 
 }
