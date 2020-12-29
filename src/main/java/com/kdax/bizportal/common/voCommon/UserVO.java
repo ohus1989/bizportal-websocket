@@ -30,10 +30,8 @@ public class UserVO {
     private String eSignOnId;
     private String eSignOnPwd;
     private String fcmToken;
-    private String branchCode;
     private String officersNumber;
     private String rcmndNumber;
-    private String branchName;
     private String workType;
     private String jobCode;
     private String jobCodeName;
