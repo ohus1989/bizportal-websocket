@@ -1,11 +1,11 @@
 package com.kdax.bizportal.common.util.setter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.IOException;
 import java.util.List;
 
 @Getter
@@ -37,7 +37,7 @@ public class ExcelUtilConfig {
 
     private List<Integer> sheetAccountIndex;
 
-    public ExcelUtilConfig(Boolean notIncludeAllSheetTitle, Boolean notIncludeAllSheetHeader, Boolean notIncludeAllSheetSummary, Boolean existAllSheetTitle, Boolean existAllSheetHeader, Boolean existAllSheetSummary, List<Integer> sheetTitleIndex, List<Integer> sheetHeaderIndex, List<Integer> sheetSummaryIndex, List<List<String>> sheetHeaders,  List<Integer> sheetAccountIndex) {
+    public ExcelUtilConfig(Boolean notIncludeAllSheetTitle, Boolean notIncludeAllSheetHeader, Boolean notIncludeAllSheetSummary, Boolean existAllSheetTitle, Boolean existAllSheetHeader, Boolean existAllSheetSummary, List<Integer> sheetTitleIndex, List<Integer> sheetHeaderIndex, List<Integer> sheetSummaryIndex, List<List<String>> sheetHeaders, List<Integer> sheetAccountIndex) {
         this.notIncludeAllSheetTitle = notIncludeAllSheetTitle;
         this.notIncludeAllSheetHeader = notIncludeAllSheetHeader;
         this.notIncludeAllSheetSummary = notIncludeAllSheetSummary;
@@ -51,11 +51,11 @@ public class ExcelUtilConfig {
         this.sheetAccountIndex = sheetAccountIndex;
     }
 
-    public void setSheetHeaders(String sheetHeaders) throws Exception{
+    public void setSheetHeaders(String sheetHeaders) throws IOException {
         this.sheetHeaders = new ObjectMapper().readValue(sheetHeaders, List.class);
     }
 
-    public void setSheetHeaders(List<List<String>> sheetHeaders) throws Exception{
+    public void setSheetHeaders(List<List<String>> sheetHeaders) {
         this.sheetHeaders = sheetHeaders;
     }
 }

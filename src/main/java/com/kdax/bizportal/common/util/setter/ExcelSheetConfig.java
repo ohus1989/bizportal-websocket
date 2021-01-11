@@ -33,7 +33,7 @@ public class ExcelSheetConfig {
 
     private List<String> sheetHeaders;
 
-    public ExcelSheetConfig(){
+    public ExcelSheetConfig() {
     }
 
     public ExcelSheetConfig(Boolean notIncludeSheetTitle, Boolean notIncludeSheetHeader, Boolean notIncludeSheetSummary, Boolean existSheetTitle, Boolean existSheetHeader, Boolean existSheetSummary, int sheetTitleIndex, int sheetHeaderIndex, int sheetSummaryIndex, List<String> sheetHeaders) {
@@ -49,7 +49,7 @@ public class ExcelSheetConfig {
         this.sheetHeaders = sheetHeaders;
     }
 
-    public ExcelSheetConfig(ExcelUtilConfig config, int index ){
+    public ExcelSheetConfig(ExcelUtilConfig config, int index) {
         this.notIncludeSheetTitle = config.getNotIncludeAllSheetTitle();
         this.notIncludeSheetHeader = config.getNotIncludeAllSheetHeader();
         this.notIncludeSheetSummary = config.getNotIncludeAllSheetSummary();
@@ -58,20 +58,20 @@ public class ExcelSheetConfig {
         this.existSheetHeader = config.getExistAllSheetHeader();
         this.existSheetSummary = config.getExistAllSheetSummary();
 
-        if(config.getSheetTitleIndex() !=null && config.getSheetTitleIndex().size()>0){
+        if (config.getSheetTitleIndex() != null && !config.getSheetTitleIndex().isEmpty()) {
             this.sheetTitleIndex = config.getSheetTitleIndex().get(index);
             this.existSheetTitle = true;
         }
-        if(config.getSheetHeaderIndex() !=null && config.getSheetHeaderIndex().size()>0){
+        if (config.getSheetHeaderIndex() != null && !config.getSheetHeaderIndex().isEmpty()) {
             this.sheetHeaderIndex = config.getSheetHeaderIndex().get(index);
             this.existSheetHeader = true;
         }
-        if(config.getSheetSummaryIndex() !=null && config.getSheetSummaryIndex().size()>0){
+        if (config.getSheetSummaryIndex() != null && !config.getSheetSummaryIndex().isEmpty()) {
             this.sheetSummaryIndex = config.getSheetSummaryIndex().get(index);
             this.existSheetSummary = true;
         }
 
-        if(config.getSheetHeaders() !=null)
+        if (config.getSheetHeaders() != null)
             this.sheetHeaders = config.getSheetHeaders().get(index);
     }
 }
