@@ -13,19 +13,15 @@ import java.util.Properties;
 @Slf4j
 public class FileUtil {
     public static Properties readPropertiesFile(String fileName) throws IOException {
-        FileInputStream fis = null;
         Properties prop = null;
 
-        try {
-            fis = new FileInputStream(fileName);
+        try (FileInputStream fis = new FileInputStream(fileName)) {
             prop = new Properties();
             prop.load(fis);
-        } catch(FileNotFoundException fnfe) {
+        } catch (FileNotFoundException fnfe) {
             fnfe.printStackTrace();
-        } catch(IOException ioe) {
+        } catch (IOException ioe) {
             ioe.printStackTrace();
-        } finally {
-            fis.close();
         }
 
         return prop;
@@ -36,9 +32,9 @@ public class FileUtil {
         try {
             prop = new Properties();
             prop.load(is);
-        } catch(FileNotFoundException fnfe) {
+        } catch (FileNotFoundException fnfe) {
             fnfe.printStackTrace();
-        } catch(IOException ioe) {
+        } catch (IOException ioe) {
             ioe.printStackTrace();
         } finally {
             is.close();
