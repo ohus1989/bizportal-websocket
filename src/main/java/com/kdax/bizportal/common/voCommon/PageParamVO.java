@@ -9,7 +9,8 @@ import java.util.Map;
 
 @Data
 public class PageParamVO {
-    private int startRow, endRow;
+    private int startRow;
+    private int endRow;
 
     // row group columns
     private List<Map<String, Object>> rowGroupCols;
