@@ -122,6 +122,9 @@ public class ExcelUtil {
 
     private void setDataByCellType(ExcelSheetConfig sConfig, Row row, Map data, int j) {
         CellType ctype = row.getCell(j).getCellType();
+        if(ctype.equals(CellType.FORMULA)){
+            ctype = row.getCell(j).getCachedFormulaResultType();
+        }
         switch (ctype) {
             case STRING:
                 data.put(createColName(sConfig, j), row.getCell(j).getStringCellValue());
@@ -152,7 +155,7 @@ public class ExcelUtil {
             default:
                 if (createColName(sConfig, j).indexOf(PRE_COLNAME) < 0) {
                     int createDataFormat = row.getCell(j).getCellStyle().getDataFormat();
-                    if (createDataFormat == 4) {
+                    if (createDataFormat == 4 || createDataFormat == 41 || createDataFormat == 15) {
                         data.put(createColName(sConfig, j), row.getCell(j).getNumericCellValue());
                     } else {
                         data.put(createColName(sConfig, j), "");
