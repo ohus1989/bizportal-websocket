@@ -145,7 +145,7 @@ public class VerifyToken {
             SeedCipher sc = new SeedCipher();
 
             String lockENV = env.getProperty("spring.profiles.active");
-            if(!"local".equals(lockENV)) {
+            if(!("local".equals(lockENV)||"testdb".equals(lockENV))) {
                 if (!authTokenVO.getUuid().equals(sc.SHA256(getRemoteIp() + authTokenVO.getUserLevel()))) {
                     log.warn("Token uui is invaliad! : {}", token);
                     throw new BizExceptionMessage(ErrorType.NOT_INVALID_TOKEN);
