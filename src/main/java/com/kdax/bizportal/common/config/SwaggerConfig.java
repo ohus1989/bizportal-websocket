@@ -3,13 +3,13 @@ package com.kdax.bizportal.common.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.RequestMethod;
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.builders.ResponseMessageBuilder;
 import springfox.documentation.schema.ModelRef;
+import springfox.documentation.service.Parameter;
 import springfox.documentation.service.ResponseMessage;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
@@ -27,25 +27,25 @@ public class SwaggerConfig {
     @Bean
     public Docket apiV1() {
 
-        List global = new ArrayList();
+        List<Parameter> global = new ArrayList<>();
         global.add(new ParameterBuilder().name("bizportal-access-token").
                 description("bizportal access token").parameterType("header").
                 required(false).modelRef(new ModelRef("string")).build());
 
-        ResponseMessage error_500 = new ResponseMessageBuilder()
+        ResponseMessage error500 = new ResponseMessageBuilder()
                 .code(500)
                 .message("500 message")
                 // .responseModel(new ModelRef("Error"))
                 .build();
 
-        ResponseMessage error_403 = new ResponseMessageBuilder()
+        ResponseMessage error403 = new ResponseMessageBuilder()
                 .code(403)
                 .message("Forbidden!")
                 .build();
 
         List<ResponseMessage> errorList = new ArrayList<>();
-        errorList.add(error_403);
-        errorList.add(error_500);
+        errorList.add(error403);
+        errorList.add(error500);
 
         return new Docket(DocumentationType.SWAGGER_2)
                 .globalOperationParameters(global)
@@ -61,20 +61,20 @@ public class SwaggerConfig {
 
     @Bean
     public Docket apiV2() {
-        ResponseMessage error_500 = new ResponseMessageBuilder()
+        ResponseMessage error500 = new ResponseMessageBuilder()
                 .code(500)
                 .message("500 message")
                 // .responseModel(new ModelRef("Error"))
                 .build();
 
-        ResponseMessage error_403 = new ResponseMessageBuilder()
+        ResponseMessage error403 = new ResponseMessageBuilder()
                 .code(403)
                 .message("Forbidden!")
                 .build();
 
         List<ResponseMessage> errorList = new ArrayList<>();
-        errorList.add(error_403);
-        errorList.add(error_500);
+        errorList.add(error403);
+        errorList.add(error500);
 
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("v2")
