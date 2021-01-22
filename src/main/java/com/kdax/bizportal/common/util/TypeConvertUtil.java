@@ -6,7 +6,7 @@ import lombok.experimental.UtilityClass;
 public class TypeConvertUtil {
 
     public static String firstOnlyUpperCase(String str){
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if(str != null && str.length()>0){
             sb.append(str.substring(0,1).toUpperCase());
             sb.append(str.substring(1));
