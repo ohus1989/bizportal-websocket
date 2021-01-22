@@ -63,4 +63,9 @@ public class RedisManager {
         return vop.get(key);
     }
 
+    public String getValueNonExpire(String key){
+        ValueOperations<String, String> vop = stringRedisTemplate.opsForValue();
+        return vop.get(key);
+    }
+
 }
