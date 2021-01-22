@@ -24,10 +24,21 @@ public class RedisManager {
     StringRedisTemplate stringRedisTemplate;
 
     public void setValue(String key, String value){
+        this.setValue(key,value,GlobalConstants.DEFALUT_REDIS_TIMEOUT_USERINFO);
+        return;
+    }
+
+    public void setValue(String key, String value,int timeout){
         ValueOperations<String, String> vop = stringRedisTemplate.opsForValue();
         //set
         vop.set(key, value);
-        stringRedisTemplate.expire(key, GlobalConstants.DEFALUT_REDIS_TIMEOUT_USERINFO, TimeUnit.SECONDS);
+        stringRedisTemplate.expire(key, timeout, TimeUnit.SECONDS);
+        return;
+    }
+    public void setValueNonExpire(String key, String value){
+        ValueOperations<String, String> vop = stringRedisTemplate.opsForValue();
+        //set
+        vop.set(key, value);
         return;
     }
 
