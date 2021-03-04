@@ -44,17 +44,16 @@ public class RestTemplateUtil {
      * @return HashMap<String, Object> result
      */
     public HashMap<String, Object> restTemplateExchange(HttpMethod httpMethod, String url, String jsonMessage, HttpHeaders header) {
-        HashMap<String, Object> result = new HashMap<String, Object>();
+        HashMap<String, Object> result = new HashMap<>();
 
         log.info("restTemplateExchange url::{},jsonMessage::{}",url,jsonMessage);
         try {
             RestTemplate restTemplate = createRestTemplate();
             restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(Charset.forName("UTF-8")));
 
-            //HttpHeaders header = new HttpHeaders();
             header.setContentType(MediaType.APPLICATION_JSON);
 
-            HttpEntity<String> entity = new HttpEntity<String>(jsonMessage.toString(), header);
+            HttpEntity<String> entity = new HttpEntity<>(jsonMessage, header);
             UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).build();
 
             ResponseEntity<Map> resultMap = restTemplate.exchange(uri.toString(), httpMethod, entity, Map.class);
@@ -91,7 +90,7 @@ public class RestTemplateUtil {
      * @return HashMap<String, Object> result
      */
     public HashMap<String, Object> restTemplateExchange(HttpMethod httpMethod, String url, Object bodyParam, HttpHeaders header) {
-        HashMap<String, Object> result = new HashMap<String, Object>();
+        HashMap<String, Object> result = new HashMap<>();
 
         log.info("bodyParam {}",bodyParam);
         try {
@@ -106,7 +105,7 @@ public class RestTemplateUtil {
                             .build()
                             .encode(StandardCharsets.UTF_8);
 
-                    entity = new HttpEntity<String>(header);
+                    entity = new HttpEntity<>(header);
                     resultMap = restTemplate.exchange(uri.toUri(), httpMethod, entity, Map.class);
                     break;
                 default:
@@ -116,7 +115,7 @@ public class RestTemplateUtil {
 
                     String jsonMessage = gson.toJson(bodyParam);
 
-                    entity = new HttpEntity<String>(jsonMessage.toString(), header);
+                    entity = new HttpEntity<>(jsonMessage, header);
                     uri = UriComponentsBuilder.fromHttpUrl(url).build();
 
                     resultMap = restTemplate.exchange(uri.toString(), httpMethod, entity, Map.class);
@@ -166,15 +165,6 @@ public class RestTemplateUtil {
             formHttpMessageConverter.setCharset(Charset.forName("EUC-KR"));
         };
 
-//        // Streams the response instead of loading it all in memory
-//        ResponseExtractor<Void> responseExtractor = response -> {
-//            // Here I write the response to a file but do what you like
-//            String filename = response.getHeaders().getContentDisposition().getFilename();
-//            Path path = Paths.get(destPath);
-//            Files.copy(response.getBody(), path);
-//            return null;
-//        };
-
         String filename = restTemplate.execute(URI.create(url), HttpMethod.GET, requestCallback,  response -> {
             // Here I write the response to a file but do what you like
             String name = "";
@@ -216,7 +206,7 @@ public class RestTemplateUtil {
     public HashMap<String, Object> doPOST(String url, Map<String, String> parameters, HttpHeaders headers) {
         log.info("doPost url{}\nheaders{}\nparameters{}\n", url, headers, parameters);
 
-        HashMap<String, Object> result = new HashMap<String, Object>();
+        HashMap<String, Object> result = new HashMap<>();
         try {
             RestTemplate restTemplate = createRestTemplate();
             ResponseEntity<Map> resultMap = null;

@@ -10,11 +10,14 @@ public class UserVO {
     private String account;
     private String password;
     private String userName;
+    private String gender;
     private String deptId;
     private String birthday;
+    private String calendarClassification;
     private String address;
     private String serviceLocale;
-    private String mobilePhone;
+    private String mobileNumber;
+    private String homeNumber;
     private String email;
     private String description;
     private String googleSecret;
@@ -27,12 +30,14 @@ public class UserVO {
     private String eSignOnId;
     private String eSignOnPwd;
     private String fcmToken;
-    private String branchCode;
     private String officersNumber;
     private String rcmndNumber;
-    private String branchName;
     private String workType;
     private String jobCode;
     private String jobCodeName;
+    private String employeeNumber;
+    private String passwordChangeDate;
+    private String department;
+    private String departmentName;
 
 }

@@ -52,7 +52,7 @@ public class RedisManager {
         //set
         vop.set(userCodeId, new Gson().toJson(setData));
         stringRedisTemplate.expire(userCodeId, GlobalConstants.DEFALUT_REDIS_TIMEOUT_USERINFO, TimeUnit.SECONDS);
-
+        
         log.info("set Redis UserInfo : " + userCodeId);
         return;
     }

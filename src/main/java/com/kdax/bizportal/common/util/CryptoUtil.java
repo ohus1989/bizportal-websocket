@@ -1,29 +1,21 @@
 package com.kdax.bizportal.common.util;
 
 import com.kdax.bizportal.common.constants.GlobalConstants;
+import lombok.experimental.UtilityClass;
 
+import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-import java.security.AlgorithmParameters;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.nio.charset.StandardCharsets;
+import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.InvalidParameterSpecException;
 import java.util.Base64;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
-
+@UtilityClass
 public class CryptoUtil {
 	/**
 	 * MD5 로 해시 한다.
@@ -91,9 +83,9 @@ public class CryptoUtil {
 	 * @throws BadPaddingException
 	 * @throws IllegalBlockSizeException
 	 */
-	public static String encryptAES256(String msg, String key) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidParameterSpecException, UnsupportedEncodingException, BadPaddingException, IllegalBlockSizeException {
+	public static String encryptAES256(String msg, String key) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidParameterSpecException, BadPaddingException, IllegalBlockSizeException {
 		SecureRandom random = new SecureRandom();
-		byte bytes[] = new byte[20];
+		byte[] bytes = new byte[20];
 		random.nextBytes(bytes);
 		byte[] saltBytes = bytes;
 		
@@ -113,7 +105,7 @@ public class CryptoUtil {
 		// Initial Vector(1단계 암호화 블록용)
 		byte[] ivBytes = params.getParameterSpec(IvParameterSpec.class).getIV();
 		
-		byte[] encryptedTextBytes = cipher.doFinal(msg.getBytes("UTF-8"));
+		byte[] encryptedTextBytes = cipher.doFinal(msg.getBytes(StandardCharsets.UTF_8));
 		
 		byte[] buffer = new byte[saltBytes.length + ivBytes.length + encryptedTextBytes.length];
 		System.arraycopy(saltBytes, 0, buffer, 0, saltBytes.length);

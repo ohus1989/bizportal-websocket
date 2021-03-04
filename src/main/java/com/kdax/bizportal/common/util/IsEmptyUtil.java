@@ -27,9 +27,7 @@ public class IsEmptyUtil {
         return false;
     }
 
-    public static boolean mapContainValueEmpty(Map map , String key){
-        if(!isEmpty(map) && map.containsKey(key) && map.get(key) !=null)
-            return false;
-        return true;
+    public static boolean mapContainValueEmpty(Map<String, Object> map, String key) {
+        return isEmpty(map) || !map.containsKey(key) || map.get(key) == null;
     }
 }

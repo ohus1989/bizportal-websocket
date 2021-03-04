@@ -25,7 +25,7 @@ public class EmailServiceUtil {
             String content = text;
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
             messageHelper.setTo(to);
-            messageHelper.setFrom(String.format("%s <%s>",senderName,senderAddress));
+            messageHelper.setFrom(String.format("%s <%s>", senderName, senderAddress));
             messageHelper.setSubject(subject);
             messageHelper.setText(content, true);
         };

@@ -28,6 +28,7 @@ public enum ErrorType {
     // 25001 DB Error,  Database, SQL
     SQL_GENERAL_WARNING(10, "SQL OK But not success", "No data, No Update, etc", "SQL_GENERAL_WARNING"),
     SQL_EXCEPTION(25001, "SQL error", "SQLException. Please contact the manager.", "SQL_EXCEPTION"),
+    NO_DATA(25002, "조회된 데이터가 없습니다.", "조회된 데이터가 없습니다. 입력값을 확인 해주세요.", "SQL_RESULT_NODATA"),
 
 
     // 26000~ App Error

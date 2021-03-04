@@ -31,6 +31,8 @@ public class MenuVO implements Serializable {
     private Date updateTime;
     private String updateCodeId;
     private String btnAuthLevel;
+    private String iconClass;
+    private String btnAuthText;
 
     private List<MenuVO> subMenu;
 

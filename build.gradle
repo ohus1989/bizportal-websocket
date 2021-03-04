@@ -44,6 +44,7 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '1.4.0.RELEASE'
 
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: '2.2.2.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.2.2.RELEASE'
 
     // https://mvnrepository.com/artifact/org.apache.poi/poi
     compile group: 'org.apache.poi', name: 'poi', version: '4.1.2'
