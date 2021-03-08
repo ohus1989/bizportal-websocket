@@ -84,7 +84,12 @@ public class GlobalExceptionHandler {
 
             //ge.printStackTrace();
             log.warn("BizExceptionMessage trace ",ge);
-            log.error("BizExceptionHandler::{}",new Gson().toJson(logComVO));
+            if(ge.getErrorType().equals(ErrorType.NOT_INVALID_TOKEN)){
+                log.warn("BizExceptionHandler::{}",new Gson().toJson(logComVO));
+            }else{
+                log.error("BizExceptionHandler::{}",new Gson().toJson(logComVO));
+            }
+
         }
 
         if(!isApiCall()){
