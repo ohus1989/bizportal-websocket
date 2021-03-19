@@ -54,6 +54,9 @@ public enum ErrorType {
     EXCEL_BANK_CODE_IS_NULL_EXCEPTION(28001, "Bank 코드가 없습니다.", "Bank 코드가 없습니다.", "EXCEL_BANK_CODE_IS_NULL_EXCEPTION"),
     EXCEL_BANK_CODE_IS_NOT_MATCH_EXCEPTION(28001, "excel 포멧이 설정된 Bank 코드가 아닙니다.", "excel 포멧이 설정된 Bank 코드가 아닙니다.", "EXCEL_BANK_CODE_IS_NOT_MATCH_EXCEPTION"),
 
+    // 29000~ sales Error
+    DEP_AMT_NOT_EXCCED_SALES_AMT(29000, "입금액은 매출액을 초과 할 수 없습니다.", "입금액은 매출액을 초과 할 수 없습니다.", "DEP_AMT_NOT_EXCCED_SALES_AMT"),
+
 
     // 90001~ default, unknown
     UNKNOWN(90001, "Server error", "Sever Internal Error.", "UNKNOWN"),
