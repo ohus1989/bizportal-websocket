@@ -279,11 +279,12 @@ public class ExcelUtil {
                 continue;
             }
             T rowVo = (T) clazz.newInstance();
+            Boolean useExcelData = false;
             for(ExcelToVoConvertOptionVO.DataConvertMapper dataConvertMapper : options.getDataConvertMapper()){
                 Method [] tempMethods = rowVo.getClass().getMethods();
-                if(dataConvertMapper.getDataColumnIndex() <= row.getLastCellNum()){
+                if(dataConvertMapper !=null && dataConvertMapper.getDataColumnIndex() <= row.getLastCellNum()){
                     int colIndex = dataConvertMapper.getDataColumnIndex();
-                    if(row.getCell(colIndex) == null){
+                    if(row.getCell(colIndex) == null || CellType.BLANK.equals(row.getCell(colIndex).getCellType())){
                         continue;
                     }
                     try {
@@ -293,10 +294,15 @@ public class ExcelUtil {
                                 String[] splitStrs = row.getCell(colIndex).getStringCellValue().split(dataConvertMapper.getSplitStr());
                                 for(int s = 0; s < dataConvertMapper.getConvertFiledIds().length; s ++){
                                     if(targetMethod.getName().equals("set"+TypeConvertUtil.firstOnlyUpperCase(dataConvertMapper.getConvertFiledIds()[s]))){
-                                        if(dataConvertMapper.getDateFormat()[s].equals("YYYY-mm-DD")){
+                                        if(dataConvertMapper.getDateFormats()[s].equals("YYYY-mm-DD")){
                                             targetMethod.invoke(rowVo, new Object[] {splitStrs[s].replaceAll("[/-]","")});
-                                        }else if(dataConvertMapper.getDateFormat()[s].equals("HH:MM:DD")){
+                                            useExcelData = true;
+                                        }else if(dataConvertMapper.getDateFormats()[s].equals("HH:MM:DD")){
                                             targetMethod.invoke(rowVo, new Object[] {splitStrs[s].replaceAll("[/:]","")});
+                                            useExcelData = true;
+                                        }else if(dataConvertMapper.getDateFormats()[s].equals("YYYY.mm.DD")){
+                                            targetMethod.invoke(rowVo, new Object[] {splitStrs[s].replaceAll("[/.]","")});
+                                            useExcelData = true;
                                         }
                                     }
                                 }
@@ -306,52 +312,94 @@ public class ExcelUtil {
                                 Method targetMethod = tempMethods[m];
                                 if(targetMethod.getName().equals("set"+TypeConvertUtil.firstOnlyUpperCase(dataConvertMapper.getConvertFiledId()))){
                                     String dataType = dataConvertMapper.getConvertDataType();
+                                    CellType ctype = row.getCell(colIndex).getCellType();
+                                    if(ctype.equals(CellType.FORMULA)){
+                                        ctype = row.getCell(colIndex).getCachedFormulaResultType();
+                                    }
                                     switch (dataType){
                                         case "string":
                                             targetMethod.invoke(rowVo, new Object[] {row.getCell(colIndex).getStringCellValue()});
+                                            useExcelData = true;
                                             break;
                                         case "number":
                                             if(dataConvertMapper.getStringToNumber() != null && dataConvertMapper.getStringToNumber()){
-                                                String []splitNums = row.getCell(colIndex).getStringCellValue().split(".");
-                                                if(splitNums.length >2){
-                                                    throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION);
-                                                }else if(splitNums.length == 2){
-                                                    // 소수점 포함
-                                                    if(splitNums[0].contains("-")){
-                                                        // 음수
+                                                String tempStr = row.getCell(colIndex).getStringCellValue();
+                                                if(tempStr != null){
+                                                    String exceptStr = tempStr.replaceAll("[,]","");
+                                                    if(exceptStr.matches("^[-+]?(0|[1-9][0-9]*)(\\.[0-9]+)?([eE][-+]?[0-9]+)?$")){
+                                                        targetMethod.invoke(rowVo, new Object[] {BigDecimal.valueOf(Double.parseDouble(exceptStr))});
+                                                        useExcelData = true;
                                                     }else{
-                                                        // 양수
+                                                        throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION);
                                                     }
                                                 }else{
-                                                    // 소수점 없음
-                                                    if(splitNums[0].contains("-")){
-                                                        // 음수
-                                                    }else{
-                                                        // 양수
-                                                    }
+                                                    throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION);
                                                 }
                                             }else{
                                                 targetMethod.invoke(rowVo, new Object[] {BigDecimal.valueOf(row.getCell(colIndex).getNumericCellValue())});
+                                                useExcelData = true;
+                                            }
+                                            break;
+                                        case "date":
+                                            if(ctype.equals(CellType.NUMERIC)){
+                                                int dataFormat = row.getCell(colIndex).getCellStyle().getDataFormat();
+                                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+                                                if (DateUtil.isCellDateFormatted(row.getCell(colIndex)) || dataFormat == 14 || dataFormat == 55 || (dataFormat == 178 && !dataConvertMapper.getConvertFiledId().equals("coinQty"))) {
+                                                    // 기존 date format
+                                                    // excel style 중 선별
+                                                    targetMethod.invoke(rowVo, new Object[] {dateFormat.format(row.getCell(colIndex).getDateCellValue())});
+                                                    break;
+                                                } else {
+                                                    throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION);
+                                                }
+                                            }else{
+                                                if(dataConvertMapper.getDateFormat().equals("YYYY-mm-DD")){
+                                                    targetMethod.invoke(rowVo, new Object[] {row.getCell(colIndex).getStringCellValue().replaceAll("[/-]","")});
+                                                    useExcelData = true;
+                                                }else if(dataConvertMapper.getDateFormat().equals("YYYY.mm.DD")){
+                                                    targetMethod.invoke(rowVo, new Object[] {row.getCell(colIndex).getStringCellValue().replaceAll("[/.]","")});
+                                                    useExcelData = true;
+                                                }else{
+                                                    throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION);
+                                                }
+                                            }
+                                            break;
+                                        case "time":
+                                            if(ctype.equals(CellType.NUMERIC)){
+                                                int dataFormat = row.getCell(colIndex).getCellStyle().getDataFormat();
+                                                if (dataFormat == 20 || dataFormat == 21) {
+                                                    targetMethod.invoke(rowVo, new Object[] {row.getCell(colIndex).getLocalDateTimeCellValue().format(DateTimeFormatter.ofPattern(dataConvertMapper.getDateFormat()))});
+                                                    break;
+                                                }else{
+                                                    throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION);
+                                                }
+                                            }else{
+                                                if(dataConvertMapper.getDateFormat().equals("HH:MM:DD")){
+                                                    targetMethod.invoke(rowVo, new Object[] {row.getCell(colIndex).getStringCellValue().replaceAll("[/:]","")});
+                                                    useExcelData = true;
+                                                }else{
+                                                    throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION);
+                                                }
                                             }
                                             break;
                                         default:{
-                                            CellType ctype = row.getCell(colIndex).getCellType();
-                                            if(ctype.equals(CellType.FORMULA)){
-                                                ctype = row.getCell(colIndex).getCachedFormulaResultType();
-                                            }
                                             switch (ctype){
                                                 case STRING:
                                                     targetMethod.invoke(rowVo, new Object[] {row.getCell(colIndex).getStringCellValue()});
+                                                    useExcelData = true;
                                                     break;
                                                 case NUMERIC:
                                                     targetMethod.invoke(rowVo, new Object[] {BigDecimal.valueOf(row.getCell(colIndex).getNumericCellValue())});
+                                                    useExcelData = true;
                                                     break;
                                                 case BOOLEAN:
                                                     targetMethod.invoke(rowVo, new Object[] {row.getCell(colIndex).getBooleanCellValue()});
+                                                    useExcelData = true;
                                                     break;
                                                 case BLANK:
                                                 default:
                                                     targetMethod.invoke(rowVo, new Object[] {""});
+                                                    useExcelData = true;
                                                     break;
                                             }
                                         }
@@ -366,7 +414,9 @@ public class ExcelUtil {
                     }
                 }
             }
-            result.add(rowVo);
+            if(useExcelData){
+                result.add(rowVo);
+            }
         }
         return result;
     }

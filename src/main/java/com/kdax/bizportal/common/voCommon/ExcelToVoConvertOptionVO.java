@@ -22,9 +22,10 @@ public class ExcelToVoConvertOptionVO {
         private String convertFiledId;
         private String []convertFiledIds;
         private String convertDataType;
-        private String []dateFormat;
+        private String [] dateFormats;
+        private String dateFormat;
         private String splitStr;
         private Boolean multipleId;
-        private Boolean StringToNumber;
+        private Boolean stringToNumber;
     }
 }
