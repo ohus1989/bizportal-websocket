@@ -311,7 +311,28 @@ public class ExcelUtil {
                                             targetMethod.invoke(rowVo, new Object[] {row.getCell(colIndex).getStringCellValue()});
                                             break;
                                         case "number":
-                                            targetMethod.invoke(rowVo, new Object[] {BigDecimal.valueOf(row.getCell(colIndex).getNumericCellValue())});
+                                            if(dataConvertMapper.getStringToNumber() != null && dataConvertMapper.getStringToNumber()){
+                                                String []splitNums = row.getCell(colIndex).getStringCellValue().split(".");
+                                                if(splitNums.length >2){
+                                                    throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION);
+                                                }else if(splitNums.length == 2){
+                                                    // 소수점 포함
+                                                    if(splitNums[0].contains("-")){
+                                                        // 음수
+                                                    }else{
+                                                        // 양수
+                                                    }
+                                                }else{
+                                                    // 소수점 없음
+                                                    if(splitNums[0].contains("-")){
+                                                        // 음수
+                                                    }else{
+                                                        // 양수
+                                                    }
+                                                }
+                                            }else{
+                                                targetMethod.invoke(rowVo, new Object[] {BigDecimal.valueOf(row.getCell(colIndex).getNumericCellValue())});
+                                            }
                                             break;
                                         default:{
                                             CellType ctype = row.getCell(colIndex).getCellType();

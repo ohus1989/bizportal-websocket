@@ -25,5 +25,6 @@ public class ExcelToVoConvertOptionVO {
         private String []dateFormat;
         private String splitStr;
         private Boolean multipleId;
+        private Boolean StringToNumber;
     }
 }
