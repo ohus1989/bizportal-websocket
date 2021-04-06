@@ -52,7 +52,13 @@ public enum ErrorType {
 
     // 28000~ excel Error
     EXCEL_BANK_CODE_IS_NULL_EXCEPTION(28001, "Bank 코드가 없습니다.", "Bank 코드가 없습니다.", "EXCEL_BANK_CODE_IS_NULL_EXCEPTION"),
-    EXCEL_BANK_CODE_IS_NOT_MATCH_EXCEPTION(28001, "excel 포멧이 설정된 Bank 코드가 아닙니다.", "excel 포멧이 설정된 Bank 코드가 아닙니다.", "EXCEL_BANK_CODE_IS_NOT_MATCH_EXCEPTION"),
+    EXCEL_BANK_CODE_IS_NOT_MATCH_EXCEPTION(28002, "excel 포멧이 설정된 Bank 코드가 아닙니다.", "excel 포멧이 설정된 Bank 코드가 아닙니다.", "EXCEL_BANK_CODE_IS_NOT_MATCH_EXCEPTION"),
+    EXCEL_FORMAT_IS_EMPTY(28003, "excel 양식이 없습니다.", "excel 양식이 없습니다.", "EXCEL_FORMAT_IS_EMPTY"),
+    DUPLICATE_BANK_ACCOUNT(28004, "중복된 은행코드가 존재합니다.", "중복된 은행코드가 존재합니다.", "DUPLICATE_BANK_ACCOUNT"),
+    NOT_MATCH_BANK_ACCOUNT(28005, "해당 은행 코드와 매칭되는 데이터가 없습니다.", "해당 은행 코드와 매칭되는 데이터가 없습니다.", "NOT_MATCH_BANK_ACCOUNT"),
+    EXCEL_CONVERT_OPTION_IS_NULL(28006, "excel 변경 옵션이 없습니다.", "excel 변경 옵션이 없습니다.", "EXCEL_CONVERT_OPTION_IS_NULL"),
+    EXCEL_OPTION_IS_NULL(28007, "excel 옵션이 없습니다.", "excel 옵션이 없습니다.", "EXCEL_OPTION_IS_NULL"),
+    EXCEL_CONVERT_EXCEPTION(28008, "excel 변환중 에러가 발생했습니다.", "excel 변환중 에러가 발생했습니다.", "EXCEL_CONVERT_EXCEPTION"),
 
     // 29000~ sales Error
     DEP_AMT_NOT_EXCCED_SALES_AMT(29000, "입금액은 매출액을 초과 할 수 없습니다.", "입금액은 매출액을 초과 할 수 없습니다.", "DEP_AMT_NOT_EXCCED_SALES_AMT"),
