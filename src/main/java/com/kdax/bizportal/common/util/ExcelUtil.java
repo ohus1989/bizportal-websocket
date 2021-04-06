@@ -297,7 +297,7 @@ public class ExcelUtil {
                                         if(dataConvertMapper.getDateFormats()[s].equals("YYYY-mm-DD")){
                                             targetMethod.invoke(rowVo, new Object[] {splitStrs[s].replaceAll("[/-]","")});
                                             useExcelData = true;
-                                        }else if(dataConvertMapper.getDateFormats()[s].equals("HH:MM:DD")){
+                                        }else if(dataConvertMapper.getDateFormats()[s].equals("HH:mm:ss")){
                                             targetMethod.invoke(rowVo, new Object[] {splitStrs[s].replaceAll("[/:]","")});
                                             useExcelData = true;
                                         }else if(dataConvertMapper.getDateFormats()[s].equals("YYYY.mm.DD")){
@@ -374,7 +374,7 @@ public class ExcelUtil {
                                                     throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION);
                                                 }
                                             }else{
-                                                if(dataConvertMapper.getDateFormat().equals("HH:MM:DD")){
+                                                if(dataConvertMapper.getDateFormat().equals("HH:mm:ss")){
                                                     targetMethod.invoke(rowVo, new Object[] {row.getCell(colIndex).getStringCellValue().replaceAll("[/:]","")});
                                                     useExcelData = true;
                                                 }else{
