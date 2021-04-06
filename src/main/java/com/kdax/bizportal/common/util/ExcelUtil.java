@@ -1,7 +1,10 @@
 package com.kdax.bizportal.common.util;
 
+import com.kdax.bizportal.common.exception.BizExceptionMessage;
+import com.kdax.bizportal.common.exception.ErrorType;
 import com.kdax.bizportal.common.util.setter.ExcelSheetConfig;
 import com.kdax.bizportal.common.util.setter.ExcelUtilConfig;
+import com.kdax.bizportal.common.voCommon.ExcelToVoConvertOptionVO;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -10,6 +13,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
@@ -248,5 +253,171 @@ public class ExcelUtil {
             summaryFlag = false;
         }
         return returnFlag;
+    }
+
+    public <T> List<T> convertExcelToVo(MultipartFile file, ExcelToVoConvertOptionVO options, Class clazz) throws IOException, InvocationTargetException, IllegalAccessException, InstantiationException {
+        List<T> result = new ArrayList<>();
+
+        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+
+        Workbook workbook = getSheets(file, extension);
+
+        // 첫번째 시트만
+        Sheet worksheet = workbook.getSheetAt(0);
+        int nullRows = 0;
+        // row for 문
+        if(options == null ){
+            throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_OPTION_IS_NULL);
+        }
+        if(options.getExcelOption() == null ){
+            throw new BizExceptionMessage(ErrorType.EXCEL_OPTION_IS_NULL);
+        }
+        for (int i = options.getExcelOption().getHeaderStartIndex(); i < worksheet.getPhysicalNumberOfRows() + nullRows; i++) {
+            Row row = worksheet.getRow(i);
+            if (row == null) {
+                nullRows++;
+                continue;
+            }
+            T rowVo = (T) clazz.newInstance();
+            Boolean useExcelData = false;
+            for(ExcelToVoConvertOptionVO.DataConvertMapper dataConvertMapper : options.getDataConvertMapper()){
+                Method [] tempMethods = rowVo.getClass().getMethods();
+                if(dataConvertMapper !=null && dataConvertMapper.getDataColumnIndex() <= row.getLastCellNum()){
+                    int colIndex = dataConvertMapper.getDataColumnIndex();
+                    if(row.getCell(colIndex) == null || CellType.BLANK.equals(row.getCell(colIndex).getCellType())){
+                        continue;
+                    }
+                    try {
+                        if(dataConvertMapper.getMultipleId() != null && dataConvertMapper.getMultipleId()){
+                            for(int m = 0; m < tempMethods.length; m ++) {
+                                Method targetMethod = tempMethods[m];
+                                String[] splitStrs = row.getCell(colIndex).getStringCellValue().split(dataConvertMapper.getSplitStr());
+                                for(int s = 0; s < dataConvertMapper.getConvertFiledIds().length; s ++){
+                                    if(targetMethod.getName().equals("set"+TypeConvertUtil.firstOnlyUpperCase(dataConvertMapper.getConvertFiledIds()[s]))){
+                                        if(dataConvertMapper.getDateFormats()[s].equals("YYYY-mm-DD")){
+                                            targetMethod.invoke(rowVo, new Object[] {splitStrs[s].replaceAll("[/-]","")});
+                                            useExcelData = true;
+                                        }else if(dataConvertMapper.getDateFormats()[s].equals("HH:MM:DD")){
+                                            targetMethod.invoke(rowVo, new Object[] {splitStrs[s].replaceAll("[/:]","")});
+                                            useExcelData = true;
+                                        }else if(dataConvertMapper.getDateFormats()[s].equals("YYYY.mm.DD")){
+                                            targetMethod.invoke(rowVo, new Object[] {splitStrs[s].replaceAll("[/.]","")});
+                                            useExcelData = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }else{
+                            for(int m = 0; m < tempMethods.length; m ++){
+                                Method targetMethod = tempMethods[m];
+                                if(targetMethod.getName().equals("set"+TypeConvertUtil.firstOnlyUpperCase(dataConvertMapper.getConvertFiledId()))){
+                                    String dataType = dataConvertMapper.getConvertDataType();
+                                    CellType ctype = row.getCell(colIndex).getCellType();
+                                    if(ctype.equals(CellType.FORMULA)){
+                                        ctype = row.getCell(colIndex).getCachedFormulaResultType();
+                                    }
+                                    switch (dataType){
+                                        case "string":
+                                            targetMethod.invoke(rowVo, new Object[] {row.getCell(colIndex).getStringCellValue()});
+                                            useExcelData = true;
+                                            break;
+                                        case "number":
+                                            if(dataConvertMapper.getStringToNumber() != null && dataConvertMapper.getStringToNumber()){
+                                                String tempStr = row.getCell(colIndex).getStringCellValue();
+                                                if(tempStr != null){
+                                                    String exceptStr = tempStr.replaceAll("[,]","");
+                                                    if(exceptStr.matches("^[-+]?(0|[1-9][0-9]*)(\\.[0-9]+)?([eE][-+]?[0-9]+)?$")){
+                                                        targetMethod.invoke(rowVo, new Object[] {BigDecimal.valueOf(Double.parseDouble(exceptStr))});
+                                                        useExcelData = true;
+                                                    }else{
+                                                        throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION);
+                                                    }
+                                                }else{
+                                                    throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION);
+                                                }
+                                            }else{
+                                                targetMethod.invoke(rowVo, new Object[] {BigDecimal.valueOf(row.getCell(colIndex).getNumericCellValue())});
+                                                useExcelData = true;
+                                            }
+                                            break;
+                                        case "date":
+                                            if(ctype.equals(CellType.NUMERIC)){
+                                                int dataFormat = row.getCell(colIndex).getCellStyle().getDataFormat();
+                                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+                                                if (DateUtil.isCellDateFormatted(row.getCell(colIndex)) || dataFormat == 14 || dataFormat == 55 || (dataFormat == 178 && !dataConvertMapper.getConvertFiledId().equals("coinQty"))) {
+                                                    // 기존 date format
+                                                    // excel style 중 선별
+                                                    targetMethod.invoke(rowVo, new Object[] {dateFormat.format(row.getCell(colIndex).getDateCellValue())});
+                                                    break;
+                                                } else {
+                                                    throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION);
+                                                }
+                                            }else{
+                                                if(dataConvertMapper.getDateFormat().equals("YYYY-mm-DD")){
+                                                    targetMethod.invoke(rowVo, new Object[] {row.getCell(colIndex).getStringCellValue().replaceAll("[/-]","")});
+                                                    useExcelData = true;
+                                                }else if(dataConvertMapper.getDateFormat().equals("YYYY.mm.DD")){
+                                                    targetMethod.invoke(rowVo, new Object[] {row.getCell(colIndex).getStringCellValue().replaceAll("[/.]","")});
+                                                    useExcelData = true;
+                                                }else{
+                                                    throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION);
+                                                }
+                                            }
+                                            break;
+                                        case "time":
+                                            if(ctype.equals(CellType.NUMERIC)){
+                                                int dataFormat = row.getCell(colIndex).getCellStyle().getDataFormat();
+                                                if (dataFormat == 20 || dataFormat == 21) {
+                                                    targetMethod.invoke(rowVo, new Object[] {row.getCell(colIndex).getLocalDateTimeCellValue().format(DateTimeFormatter.ofPattern(dataConvertMapper.getDateFormat()))});
+                                                    break;
+                                                }else{
+                                                    throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION);
+                                                }
+                                            }else{
+                                                if(dataConvertMapper.getDateFormat().equals("HH:MM:DD")){
+                                                    targetMethod.invoke(rowVo, new Object[] {row.getCell(colIndex).getStringCellValue().replaceAll("[/:]","")});
+                                                    useExcelData = true;
+                                                }else{
+                                                    throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION);
+                                                }
+                                            }
+                                            break;
+                                        default:{
+                                            switch (ctype){
+                                                case STRING:
+                                                    targetMethod.invoke(rowVo, new Object[] {row.getCell(colIndex).getStringCellValue()});
+                                                    useExcelData = true;
+                                                    break;
+                                                case NUMERIC:
+                                                    targetMethod.invoke(rowVo, new Object[] {BigDecimal.valueOf(row.getCell(colIndex).getNumericCellValue())});
+                                                    useExcelData = true;
+                                                    break;
+                                                case BOOLEAN:
+                                                    targetMethod.invoke(rowVo, new Object[] {row.getCell(colIndex).getBooleanCellValue()});
+                                                    useExcelData = true;
+                                                    break;
+                                                case BLANK:
+                                                default:
+                                                    targetMethod.invoke(rowVo, new Object[] {""});
+                                                    useExcelData = true;
+                                                    break;
+                                            }
+                                        }
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }catch (Exception e){
+                        String addMessage = i+" 번째 줄 "+ colIndex+" 컬럼 변환중 에러가 발생했습니다.";
+                        throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION, addMessage);
+                    }
+                }
+            }
+            if(useExcelData){
+                result.add(rowVo);
+            }
+        }
+        return result;
     }
 }
