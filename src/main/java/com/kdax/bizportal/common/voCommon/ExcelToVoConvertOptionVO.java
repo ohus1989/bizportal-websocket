@@ -8,6 +8,8 @@ import java.util.List;
 @Getter
 @Setter
 public class ExcelToVoConvertOptionVO {
+    private String tableName;
+    private String loginId;
     private ExcelOption excelOption;
     private List<DataConvertMapper> dataConvertMapper;
     @Getter
@@ -27,5 +29,13 @@ public class ExcelToVoConvertOptionVO {
         private String splitStr;
         private Boolean multipleId;
         private Boolean stringToNumber;
+        private String oriDBKey;
+        private Boolean addValue = false;
+        private String addValueType;
+        private String applyValue;
+        private Boolean notEmpty;
+        private String replaceRegex;
+        private Boolean isPk;
+        private Boolean insertOnly;
     }
 }

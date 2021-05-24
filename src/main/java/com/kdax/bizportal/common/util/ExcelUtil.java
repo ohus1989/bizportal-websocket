@@ -8,6 +8,7 @@ import com.kdax.bizportal.common.voCommon.ExcelToVoConvertOptionVO;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
@@ -419,5 +420,189 @@ public class ExcelUtil {
             }
         }
         return result;
+    }
+
+    public List<Map<String, String>> convertExcelToVo(MultipartFile file, ExcelToVoConvertOptionVO options) throws IOException, InvocationTargetException, IllegalAccessException, InstantiationException {
+        List<Map<String, String>> result = new ArrayList<>();
+
+        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+
+        Workbook workbook = getSheets(file, extension);
+
+        // 첫번째 시트만
+        Sheet worksheet = workbook.getSheetAt(0);
+        int nullRows = 0;
+        // row for 문
+        if(options == null ){
+            throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_OPTION_IS_NULL);
+        }
+        if(options.getExcelOption() == null ){
+            throw new BizExceptionMessage(ErrorType.EXCEL_OPTION_IS_NULL);
+        }
+        for (int i = options.getExcelOption().getHeaderStartIndex(); i < worksheet.getPhysicalNumberOfRows() + nullRows; i++) {
+            Row row = worksheet.getRow(i);
+            if (row == null) {
+                nullRows++;
+                continue;
+            }
+            Boolean useExcelData = false;
+            Map<String, String> rowMap = new HashMap<>();
+            Boolean emptyChk = true;
+            for(ExcelToVoConvertOptionVO.DataConvertMapper dataConvertMapper : options.getDataConvertMapper()){
+                String key = dataConvertMapper.getOriDBKey();
+                String value = "";
+                if(dataConvertMapper.getAddValue() != null && dataConvertMapper.getAddValue()){
+                    if(dataConvertMapper.getAddValueType() != null && !"".equals(dataConvertMapper.getAddValueType())){
+                        switch (dataConvertMapper.getAddValueType()){
+                            case "APPLY_VALUE" :
+                                rowMap.put(key, dataConvertMapper.getApplyValue());
+                            break;
+                            case "LOGIN_ID":
+                                rowMap.put(key, options.getLoginId());
+                            break;
+                        }
+                    }else{
+                        throw new BizExceptionMessage(ErrorType.EXCEL_EMPTY_ADD_VALUE_TYPE);
+                    }
+                    continue;
+                }
+                if(dataConvertMapper !=null){
+                    int colIndex = dataConvertMapper.getDataColumnIndex();
+                    if(row.getCell(colIndex) == null || CellType.BLANK.equals(row.getCell(colIndex).getCellType())){
+                        rowMap.put(key, "");
+                        continue;
+                    }
+                    try {
+                        if(dataConvertMapper.getMultipleId() != null && dataConvertMapper.getMultipleId()){
+                            String[] splitStrs = row.getCell(colIndex).getStringCellValue().split(dataConvertMapper.getSplitStr());
+                            for(int s = 0; s < dataConvertMapper.getConvertFiledIds().length; s ++){
+                                if(dataConvertMapper.getDateFormats()[s].equals("YYYY-mm-DD")){
+                                    rowMap.put(dataConvertMapper.getConvertFiledIds()[s], splitStrs[s].replaceAll("[/-]",""));
+                                    useExcelData = true;
+                                }else if(dataConvertMapper.getDateFormats()[s].equals("HH:mm:ss")){
+                                    rowMap.put(dataConvertMapper.getConvertFiledIds()[s], splitStrs[s].replaceAll("[/:]",""));
+                                    useExcelData = true;
+                                }else if(dataConvertMapper.getDateFormats()[s].equals("YYYY.mm.DD")){
+                                    rowMap.put(dataConvertMapper.getConvertFiledIds()[s], splitStrs[s].replaceAll("[/.]",""));
+                                    useExcelData = true;
+                                }
+                            }
+                        }else{
+                            String dataType = dataConvertMapper.getConvertDataType();
+                            CellType ctype = row.getCell(colIndex).getCellType();
+                            if(ctype.equals(CellType.FORMULA)){
+                                ctype = row.getCell(colIndex).getCachedFormulaResultType();
+                            }
+                            switch (dataType){
+                                case "string":
+                                    value = row.getCell(colIndex).getStringCellValue();
+                                    useExcelData = true;
+                                    break;
+                                case "number":
+                                    if(dataConvertMapper.getStringToNumber() != null && dataConvertMapper.getStringToNumber()){
+                                        String tempStr = row.getCell(colIndex).getStringCellValue();
+                                        if(tempStr != null){
+                                            String exceptStr = tempStr.replaceAll("[,]","");
+                                            if(exceptStr.matches("^[-+]?(0|[1-9][0-9]*)(\\.[0-9]+)?([eE][-+]?[0-9]+)?$")){
+                                                value = BigDecimal.valueOf(Double.parseDouble(exceptStr)).toString();
+                                                useExcelData = true;
+                                            }else{
+                                                throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION);
+                                            }
+                                        }else{
+                                            throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION);
+                                        }
+                                    }else{
+                                        value = BigDecimal.valueOf(row.getCell(colIndex).getNumericCellValue()).toString();
+                                        useExcelData = true;
+                                    }
+                                    break;
+                                case "date":
+                                    if(ctype.equals(CellType.NUMERIC)){
+                                        int dataFormat = row.getCell(colIndex).getCellStyle().getDataFormat();
+                                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+                                        if (DateUtil.isCellDateFormatted(row.getCell(colIndex)) || dataFormat == 14 || dataFormat == 55 || (dataFormat == 178 && !dataConvertMapper.getConvertFiledId().equals("coinQty"))) {
+                                            // 기존 date format
+                                            // excel style 중 선별
+                                            value = dateFormat.format(row.getCell(colIndex).getDateCellValue());
+                                            break;
+                                        } else {
+                                            throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION);
+                                        }
+                                    }else{
+                                        if(dataConvertMapper.getDateFormat().equals("YYYY-mm-DD")){
+                                            value = row.getCell(colIndex).getStringCellValue().replaceAll("[/-]","");
+                                            useExcelData = true;
+                                        }else if(dataConvertMapper.getDateFormat().equals("YYYY.mm.DD")){
+                                            value = row.getCell(colIndex).getStringCellValue().replaceAll("[/.]","");
+                                            useExcelData = true;
+                                        }else{
+                                            throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION);
+                                        }
+                                    }
+                                    break;
+                                case "time":
+                                    if(ctype.equals(CellType.NUMERIC)){
+                                        int dataFormat = row.getCell(colIndex).getCellStyle().getDataFormat();
+                                        if (dataFormat == 20 || dataFormat == 21 || dataFormat == 179) {
+                                            value = row.getCell(colIndex).getLocalDateTimeCellValue().format(DateTimeFormatter.ofPattern(dataConvertMapper.getDateFormat()));
+                                            break;
+                                        }else{
+                                            throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION);
+                                        }
+                                    }else{
+                                        if(dataConvertMapper.getDateFormat().equals("HH:mm:ss")){
+                                            value = row.getCell(colIndex).getStringCellValue().replaceAll("[/:]","");
+                                            useExcelData = true;
+                                        }else{
+                                            throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION);
+                                        }
+                                    }
+                                    break;
+                                default:{
+                                    switch (ctype){
+                                        case STRING:
+                                            value = row.getCell(colIndex).getStringCellValue();
+                                            useExcelData = true;
+                                            break;
+                                        case NUMERIC:
+                                            value = BigDecimal.valueOf(row.getCell(colIndex).getNumericCellValue()).toString();
+                                            useExcelData = true;
+                                            break;
+                                        case BOOLEAN:
+                                            value = row.getCell(colIndex).getBooleanCellValue()+"";
+                                            useExcelData = true;
+                                            break;
+                                        case BLANK:
+                                        default:
+                                            value = "";
+                                            useExcelData = true;
+                                            break;
+                                    }
+                                }
+                            }
+                            if(dataConvertMapper.getReplaceRegex() != null && !"".equals(dataConvertMapper.getReplaceRegex())){
+                                value = value.replaceAll(dataConvertMapper.getReplaceRegex(),"");
+                            }
+                            if(dataConvertMapper.getNotEmpty() != null && dataConvertMapper.getNotEmpty()){
+                                emptyChk = emptyChk(value);
+                            }
+                            rowMap.put(key,value);
+                        }
+                    }catch (Exception e){
+                        String addMessage = i+" 번째 줄 "+ colIndex+" 컬럼 변환중 에러가 발생했습니다.";
+                        throw new BizExceptionMessage(ErrorType.EXCEL_CONVERT_EXCEPTION, addMessage);
+                    }
+                }
+            }
+            if(useExcelData && emptyChk){
+                result.add(rowMap);
+            }
+        }
+        return result;
+    }
+
+    private Boolean emptyChk(String str){
+        return str != null && !"".equals(str) ;
     }
 }
