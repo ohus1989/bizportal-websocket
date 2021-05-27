@@ -32,7 +32,7 @@ dependencies {
     compile('io.springfox:springfox-swagger2:2.9.2')
     compile('org.springframework:spring-webmvc:5.0.8.RELEASE')
     compile files('lib/ojdbc8-12.2.0.1.jar')
-    compile("mysql:mysql-connector-java:8.0.11")
+//    compile("mysql:mysql-connector-java:8.0.11")
     compile('org.projectlombok:lombok:1.18.4')
     compile group: 'com.google.code.gson', name: 'gson', version: '2.8.6'
     compile("org.mybatis.spring.boot:mybatis-spring-boot-starter:2.0.1")
