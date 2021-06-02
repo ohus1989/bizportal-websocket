@@ -19,7 +19,7 @@ import lombok.experimental.UtilityClass;
  */
 @UtilityClass
 public class StringUtil {
-    public static String camelCaseToSnakeCase(String targetStr){
+    public static String camelCaseToSnakeCase(String targetStr) {
         String regex = "([a-z])([A-Z]+)";
         String replacement = "$1_$2";
 
@@ -35,10 +35,6 @@ public class StringUtil {
         return null;
     }
 
-    public static String toJson(Object obj) {
-        return StringUtil.toJson(obj,false);
-    }
-
     public static String toJson(Object obj,boolean isPretty)
     {
         Gson gson = new Gson();
@@ -52,5 +48,13 @@ public class StringUtil {
         return gson.toJson(je);
     }
 
-
+    public static String setLPad(String strContext, int iLen, String strChar) {
+        String strResult = "";
+        StringBuilder sbAddChar = new StringBuilder();
+        for (int i = strContext.length(); i < iLen; i++) { // iLen길이 만큼 strChar문자로 채운다.
+            sbAddChar.append(strChar);
+        }
+        strResult = sbAddChar + strContext; // LPAD이므로, 채울문자열 + 원래문자열로 Concate한다.
+        return strResult;
+    }
 }
