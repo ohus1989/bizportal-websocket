@@ -35,6 +35,10 @@ public class StringUtil {
         return null;
     }
 
+    public static String toJson(Object obj) {
+        return StringUtil.toJson(obj,false);
+    }
+
     public static String toJson(Object obj,boolean isPretty)
     {
         Gson gson = new Gson();
