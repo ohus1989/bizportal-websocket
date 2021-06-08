@@ -221,10 +221,14 @@ public class VerifyToken {
     }
 
     public String getUserCodeId(){
-        AuthTokenVO token = this.getAuthTokenFromTokenHeader();
-        if(token!=null){
-            return token.getUserCodeId();
-        }else{
+        try {
+            AuthTokenVO token = this.getAuthTokenFromTokenHeader();
+            if(token!=null){
+                return token.getUserCodeId();
+            }else{
+                return null;
+            }
+        }catch (Exception e){
             return null;
         }
     }
