@@ -216,6 +216,9 @@ public class VerifyToken {
         String ip = request.getHeader("X-FORWARDED-FOR");
         if (ip == null) {
             ip = request.getRemoteAddr();
+            log.info("getRemoteAddr : {}", ip);
+        }else{
+            log.info("getRemoteIP : {}", ip);
         }
         return ip;
     }
