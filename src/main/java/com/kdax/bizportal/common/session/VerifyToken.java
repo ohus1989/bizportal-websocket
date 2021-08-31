@@ -146,8 +146,6 @@ public class VerifyToken {
 
             String lockENV = env.getProperty("spring.profiles.active");
             if(!("local".equals(lockENV)||"testdb".equals(lockENV))) {
-                log.info("token equals authTokenVO {}", authTokenVO.getUuid());
-                log.info("token equals sha256 {} ",sc.SHA256(getRemoteIp() + authTokenVO.getUserLevel()));
                 if (!authTokenVO.getUuid().equals(sc.SHA256(getRemoteIp() + authTokenVO.getUserLevel()))) {
                     log.warn("Token uui is invaliad! : {}", token);
                     throw new BizExceptionMessage(ErrorType.NOT_INVALID_TOKEN);
@@ -218,9 +216,6 @@ public class VerifyToken {
         String ip = request.getHeader("X-FORWARDED-FOR");
         if (ip == null) {
             ip = request.getRemoteAddr();
-            log.info("getRemoteAddr : {}", ip);
-        }else{
-            log.info("getRemoteIP : {}", ip);
         }
         return ip;
     }
