@@ -91,7 +91,7 @@ public class LoggingAspectConfig {
 
     //    @Around("execution(* com.kdax.bizportal.basicbiz.modules.coinevent.CoinEventApi.selectCoinEventList(..))")
     // 4
-    @Around("execution(* com.kdax.bizportal..**Api.*(..))")
+    @Around("execution(* com.kdax.bizportal..*Api.*(..))")
     public Object doLogging(ProceedingJoinPoint pjp) throws Throwable {
         String lockENV = env.getProperty("spring.profiles.active");
 //        MDC.put("txid", UUID.randomUUID().toString());
