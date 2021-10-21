@@ -17,6 +17,9 @@ public enum ErrorType {
     INVALID_IDPASSWORD(21010, "존재하지 않는 아이디이거나, 잘못된 비밀번호입니다.", "Invalid id / password", "INVALID_IDPASSWORD"),
     NON_USER_RLOE(21011, "권한이 없습니다. 담당자에게 문의 바랍니다.", "NON_USER_RLOE", "NON_USER_RLOE"),
     NON_ACTIVE_USER(21011, "활성화 되지않은 사용자 입니다. 관리자에게 문의 바랍니다.", "NON_ACTIVE_USER", "NON_ACTIVE_USER"),
+    OTP_CODE_NOT_VALID(21013, "OTP 코드가 맞지 않습니다. 다시 입력 해주세요.", "OTP_CODE_NOT_VALID", "OTP_CODE_NOT_VALID"),
+    OTP_NON_REGISTRATION(21014, "OTP가 등록된 사용자가 아닙니다.", "OTP_NON_REGISTRATION", "OTP_NON_REGISTRATION"),
+    OTP_CREATION_FAILED(21015, "OTP 생성 실패", "OTP_CREATION_FAILED", "OTP_CREATION_FAILED"),
 
 
     // 22000 ~  auth, role

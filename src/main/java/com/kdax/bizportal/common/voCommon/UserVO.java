@@ -1,10 +1,15 @@
 package com.kdax.bizportal.common.voCommon;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserVO {
     private String codeId;
     private String account;
@@ -39,5 +44,6 @@ public class UserVO {
     private String passwordChangeDate;
     private String department;
     private String departmentName;
+    private String otpSecretKey;
 
 }
