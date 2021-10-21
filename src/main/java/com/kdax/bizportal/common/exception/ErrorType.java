@@ -18,7 +18,6 @@ public enum ErrorType {
     NON_USER_RLOE(21011, "권한이 없습니다. 담당자에게 문의 바랍니다.", "NON_USER_RLOE", "NON_USER_RLOE"),
     NON_ACTIVE_USER(21012, "활성화 되지않은 사용자 입니다. 관리자에게 문의 바랍니다.", "NON_ACTIVE_USER", "NON_ACTIVE_USER"),
     CHANGE_PWD(21013, "비밀번호 사용기간이 지났습니다.", "비밀번호 사용기간(90일)이 지났습니다. 변경하시기 바랍니다.", "CHANGE_PWD"),
-    NON_ACTIVE_USER(21011, "활성화 되지않은 사용자 입니다. 관리자에게 문의 바랍니다.", "NON_ACTIVE_USER", "NON_ACTIVE_USER"),
     OTP_CODE_NOT_VALID(21013, "OTP 코드가 맞지 않습니다. 다시 입력 해주세요.", "OTP_CODE_NOT_VALID", "OTP_CODE_NOT_VALID"),
     OTP_NON_REGISTRATION(21014, "OTP가 등록된 사용자가 아닙니다.", "OTP_NON_REGISTRATION", "OTP_NON_REGISTRATION"),
     OTP_CREATION_FAILED(21015, "OTP 생성 실패", "OTP_CREATION_FAILED", "OTP_CREATION_FAILED"),
