@@ -16,7 +16,8 @@ public enum ErrorType {
     IO_EXCEPTION(21009, "IO exception", " IOException. Please contact the manager.", "IO_EXCEPTION"),
     INVALID_IDPASSWORD(21010, "존재하지 않는 아이디이거나, 잘못된 비밀번호입니다.", "Invalid id / password", "INVALID_IDPASSWORD"),
     NON_USER_RLOE(21011, "권한이 없습니다. 담당자에게 문의 바랍니다.", "NON_USER_RLOE", "NON_USER_RLOE"),
-    NON_ACTIVE_USER(21011, "활성화 되지않은 사용자 입니다. 관리자에게 문의 바랍니다.", "NON_ACTIVE_USER", "NON_ACTIVE_USER"),
+    NON_ACTIVE_USER(21012, "활성화 되지않은 사용자 입니다. 관리자에게 문의 바랍니다.", "NON_ACTIVE_USER", "NON_ACTIVE_USER"),
+    CHANGE_PWD(21013, "비밀번호 사용기간이 지났습니다.", "비밀번호 사용기간(90일)이 지났습니다. 변경하시기 바랍니다.", "CHANGE_PWD"),
 
 
     // 22000 ~  auth, role

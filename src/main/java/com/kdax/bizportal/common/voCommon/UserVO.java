@@ -39,5 +39,7 @@ public class UserVO {
     private String passwordChangeDate;
     private String department;
     private String departmentName;
+    private String changePwdDate;
+    private String changePwd;
 
 }
