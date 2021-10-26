@@ -14,15 +14,16 @@ import java.util.List;
 @RedisHash("UserRedisInfo")
 public class UserRedisInfoVO implements Serializable {
 
-    private String id;
+    private String userCodeId;
+    private Boolean isOtp;
     private List<MenuVO> menuPriviledge;
     private LocalDateTime refreshTime;
 
     public UserRedisInfoVO(){
     }
 
-    public UserRedisInfoVO(String id, LocalDateTime refreshTime) {
-        this.id = id;
+    public UserRedisInfoVO(String userCodeId, LocalDateTime refreshTime) {
+        this.userCodeId = userCodeId;
         this.refreshTime = refreshTime;
     }
 

@@ -54,6 +54,9 @@ public class VerifyToken {
     @Autowired
     Environment env;
 
+    @Autowired
+    RedisManager redisManager;
+
     public String makeToken(AuthTokenVO userInfo) {
         String jwtString = Jwts
                 .builder()
@@ -206,10 +209,15 @@ public class VerifyToken {
             authTokenVO.setUserCodeId(userInfoVO.getCodeId());
 
             String lockENV = env.getProperty("spring.profiles.active");
-            authTokenVO.setIsOtp(!StringUtils.isEmpty(userInfoVO.getOtpSecretKey()));
-            if (lockENV != null && "local|testdb|dev".contains(lockENV)) {
+            if (lockENV != null && "testdb|dev".contains(lockENV)) {
                 authTokenVO.setIsOtp(true);
+            }else{
+                UserRedisInfoVO userSessionInfo = redisManager.getUserSessionInfo(userInfoVO.getCodeId());
+                if(userSessionInfo!=null){
+                    authTokenVO.setIsOtp(userSessionInfo.getIsOtp());
+                }
             }
+
             authTokenVO.setUserLevel("DEV");  // 향후 사용 여부 확인
             authTokenVO.setExpireDate(cal.getTime());
             authTokenVO.setUserLocale(new Locale(userInfoVO.getServiceLocale()));
