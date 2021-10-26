@@ -94,46 +94,42 @@ public class VerifyToken {
         String token = request.getHeader(GlobalConstants.TOKEN_HEADER);
         boolean flag = authDefaultFlag; //false default , for test
 
-        try {
-            if (!StringUtils.isEmpty(token)) {
-                MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-                Method method = methodSignature.getMethod();
-                AcessScope acessScope = method.getAnnotation(AcessScope.class);
+        if (!StringUtils.isEmpty(token)) {
+            MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+            Method method = methodSignature.getMethod();
+            AcessScope acessScope = method.getAnnotation(AcessScope.class);
 
-                //세션 셋팅 , 향후 redis 고려
-                //sessionManager.setSession(authTokenVO);
+            //세션 셋팅 , 향후 redis 고려
+            //sessionManager.setSession(authTokenVO);
 
-                if ((acessScope.scope() == AccessScopeType.PRIVATE ||
-                        acessScope.scope() == AccessScopeType.SYSTEM ||
-                        acessScope.scope() == AccessScopeType.WITHOUT_OTP_PRIVATE)) {
-                    AuthTokenVO authTokenVO = getAuthTokenFromString(token);
+            if ((acessScope.scope() == AccessScopeType.PRIVATE ||
+                    acessScope.scope() == AccessScopeType.SYSTEM ||
+                    acessScope.scope() == AccessScopeType.WITHOUT_OTP_PRIVATE)) {
+                AuthTokenVO authTokenVO = getAuthTokenFromString(token);
 //                otp 등록 이용자 확인
-                    if (!authTokenVO.getIsOtp() && acessScope.scope() != AccessScopeType.WITHOUT_OTP_PRIVATE) {
-                        throw new BizExceptionMessage(ErrorType.NOT_OTP_REGISTRANT);
-                    } else {
-                        flag = true;
-                    }
-                } else if (acessScope.scope() == AccessScopeType.PUBLIC) {
+                if ((authTokenVO.getIsOtp() == null || !authTokenVO.getIsOtp()) && acessScope.scope() != AccessScopeType.WITHOUT_OTP_PRIVATE) {
+                    throw new BizExceptionMessage(ErrorType.NOT_OTP_REGISTRANT);
+                } else {
                     flag = true;
                 }
-
-            } else {
-                // 이부분은 초기 개발시에만 사용
-                //sessionManager.setTestDefault();
+            } else if (acessScope.scope() == AccessScopeType.PUBLIC) {
+                flag = true;
             }
 
-            if (flag) {
+        } else {
+            // 이부분은 초기 개발시에만 사용
+            //sessionManager.setTestDefault();
+        }
+
+        if (flag) {
             /*
             Object[] args = Arrays.stream(joinPoint.getArgs()).map(data ->
                         { if(data instanceof String) { data = pcheck; } return data; }).toArray();
              */
 
-                return joinPoint.proceed();
-            } else {
-                log.error("access deny api.. ");
-                throw new BizExceptionMessage(ErrorType.NOT_AUTH);
-            }
-        } catch (Exception e) {
+            return joinPoint.proceed();
+        } else {
+            log.error("access deny api.. ");
             throw new BizExceptionMessage(ErrorType.NOT_AUTH);
         }
     }
