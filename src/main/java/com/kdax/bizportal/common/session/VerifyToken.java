@@ -54,29 +54,33 @@ public class VerifyToken {
     @Autowired
     Environment env;
 
-    public String makeToken(AuthTokenVO userInfo){
-        String jwtString = Jwts.builder()
-                .setHeaderParam("tpy","JWT")
+    public String makeToken(AuthTokenVO userInfo) {
+        String jwtString = Jwts
+                .builder()
+                .setHeaderParam("tpy", "JWT")
                 .claim("id", "haha")
                 .signWith(SignatureAlgorithm.HS256, GlobalConstants.JWT_USER_KEY)
                 .compact();
         return jwtString;
     }
+
     // check parsing error
-    public boolean isUseableToken(String token){
-        try{
-            Jws<Claims> claimsJws = Jwts.parser()
+    public boolean isUseableToken(String token) {
+        try {
+            Jws<Claims> claimsJws = Jwts
+                    .parser()
                     .setSigningKey(GlobalConstants.JWT_USER_KEY)
                     .parseClaimsJws(token);
             //logger.debug("token : {}", claimsJws);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return false;
         }
         return true;
     }
 
-    public Jws<Claims> getDecodeToken(String token){
-        return Jwts.parser()
+    public Jws<Claims> getDecodeToken(String token) {
+        return Jwts
+                .parser()
                 .setSigningKey(GlobalConstants.JWT_USER_KEY)
                 .parseClaimsJws(token);
     }
@@ -87,7 +91,7 @@ public class VerifyToken {
         String token = request.getHeader(GlobalConstants.TOKEN_HEADER);
         boolean flag = authDefaultFlag; //false default , for test
 
-        if(!StringUtils.isEmpty(token)) {
+        if (!StringUtils.isEmpty(token)) {
             MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
             Method method = methodSignature.getMethod();
             AcessScope acessScope = method.getAnnotation(AcessScope.class);
@@ -95,43 +99,50 @@ public class VerifyToken {
             //세션 셋팅 , 향후 redis 고려
             //sessionManager.setSession(authTokenVO);
 
-            if( (acessScope.scope() == AccessScopeType.PRIVATE ||
-                    acessScope.scope() == AccessScopeType.SYSTEM) ){
+            if ((acessScope.scope() == AccessScopeType.PRIVATE ||
+                    acessScope.scope() == AccessScopeType.SYSTEM ||
+                    acessScope.scope() == AccessScopeType.WITHOUT_OTP_PRIVATE)) {
                 AuthTokenVO authTokenVO = getAuthTokenFromString(token);
+//                otp 등록 이용자 확인
+                if (!authTokenVO.getIsOtp() && acessScope.scope() != AccessScopeType.WITHOUT_OTP_PRIVATE) {
+                    throw new BizExceptionMessage(ErrorType.NOT_OTP_REGISTRANT);
+                } else {
+                    flag = true;
+                }
+            } else if (acessScope.scope() == AccessScopeType.PUBLIC) {
                 flag = true;
             }
-            else if(acessScope.scope() == AccessScopeType.PUBLIC){
-                flag = true;
-            }
-        }else {
+
+        } else {
             // 이부분은 초기 개발시에만 사용
             //sessionManager.setTestDefault();
         }
 
-        if(flag) {
+        if (flag) {
             /*
             Object[] args = Arrays.stream(joinPoint.getArgs()).map(data ->
                         { if(data instanceof String) { data = pcheck; } return data; }).toArray();
              */
 
             return joinPoint.proceed();
-        }
-        else{
+        } else {
             log.error("access deny api.. ");
             throw new BizExceptionMessage(ErrorType.NOT_AUTH);
         }
     }
 
-    public AuthTokenVO getAuthTokenFromString(String token){
+    public AuthTokenVO getAuthTokenFromString(String token) {
         AuthTokenVO authTokenVO = null;
         try {
-            if(StringUtils.isEmpty(token) ){
+            if (StringUtils.isEmpty(token)) {
                 log.warn("invaild token {}", token);
                 throw new BizExceptionMessage(ErrorType.NOT_INVALID_TOKEN);
             }
 
             Jws<Claims> jwsClaims = getDecodeToken(token);
-            Object jwsClaimsString = jwsClaims.getBody().get(GlobalConstants.TOKEN_JWTID);
+            Object jwsClaimsString = jwsClaims
+                    .getBody()
+                    .get(GlobalConstants.TOKEN_JWTID);
 
             Gson gson = new Gson();
             authTokenVO = gson.fromJson((String) jwsClaimsString, AuthTokenVO.class);
@@ -145,8 +156,10 @@ public class VerifyToken {
             SeedCipher sc = new SeedCipher();
 
             String lockENV = env.getProperty("spring.profiles.active");
-            if(!("local".equals(lockENV)||"testdb".equals(lockENV))) {
-                if (!authTokenVO.getUuid().equals(sc.SHA256(getRemoteIp() + authTokenVO.getUserLevel()))) {
+            if (!("local".equals(lockENV) || "testdb".equals(lockENV))) {
+                if (!authTokenVO
+                        .getUuid()
+                        .equals(sc.SHA256(getRemoteIp() + authTokenVO.getUserLevel()))) {
                     log.warn("Token uui is invaliad! : {}", token);
                     throw new BizExceptionMessage(ErrorType.NOT_INVALID_TOKEN);
                 }
@@ -155,64 +168,73 @@ public class VerifyToken {
             Calendar today = Calendar.getInstance();
             today.setTime(new Date());
 
-            if (authTokenVO.getExpireDate().compareTo(today.getTime()) == -1) {
+            if (authTokenVO
+                    .getExpireDate()
+                    .compareTo(today.getTime()) == -1) {
                 log.warn("token is expired {}", authTokenVO.getExpireDate());
                 throw new BizExceptionMessage(ErrorType.NOT_INVALID_TOKEN);
             }
 
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             log.warn("Exception : {}", e.getMessage());
             throw new BizExceptionMessage(ErrorType.NOT_INVALID_TOKEN);
         }
         return authTokenVO;
     }
 
-    public String getToken(UserVO userInfoVO){
+    public String getToken(UserVO userInfoVO) {
 
         AuthTokenVO authTokenVO = new AuthTokenVO();
         String jwtString = "";
         Gson gson = new Gson();
 
-        try{
+        try {
             SeedCipher sc = new SeedCipher();
 
             //TUser-Agent 체크하여 시간 설정
             String userAgent = request.getHeader("User-Agent");
-            log.info("User-Agent:\n{}",userAgent);
+            log.info("User-Agent:\n{}", userAgent);
 
             Calendar cal = Calendar.getInstance();
             cal.setTime(new Date());
-            if(userAgent!=null&&userAgent.indexOf("Android")>-1){
+            if (userAgent != null && userAgent.contains("Android")) {
                 cal.add(Calendar.MINUTE, androidExpireMinute);
-            }else{
+            } else {
                 cal.add(Calendar.MINUTE, webExpireMinute);
             }
 
-            authTokenVO.setUserCodeId(userInfoVO.getCodeId() );
+            authTokenVO.setUserCodeId(userInfoVO.getCodeId());
+
+            String lockENV = env.getProperty("spring.profiles.active");
+            authTokenVO.setIsOtp(!StringUtils.isEmpty(userInfoVO.getOtpSecretKey()));
+            if (lockENV != null && "local|testdb|dev".contains(lockENV)) {
+                authTokenVO.setIsOtp(true);
+            }
             authTokenVO.setUserLevel("DEV");  // 향후 사용 여부 확인
             authTokenVO.setExpireDate(cal.getTime());
-            authTokenVO.setUserLocale( new Locale(userInfoVO.getServiceLocale()) );
-            authTokenVO.setUuid(sc.SHA256(getRemoteIp() +  authTokenVO.getUserLevel()  ));
+            authTokenVO.setUserLocale(new Locale(userInfoVO.getServiceLocale()));
+            authTokenVO.setUuid(sc.SHA256(getRemoteIp() + authTokenVO.getUserLevel()));
 
             String authToken = gson.toJson(authTokenVO);
             log.info("authToken :: {}", authToken);
-            //log.info("descrypt token : {}", sc.decryptAsString(sc.getByteFromHexString(authToken), cmk.getBytes(GlobalConstants.DEFAULT_CHARSET)));
-            jwtString = Jwts.builder()
-                    .setHeaderParam("tpy","JWT")
+            //log.info("descrypt token : {}", sc.decryptAsString(sc.getByteFromHexString(authToken), cmk.getBytes
+            // (GlobalConstants.DEFAULT_CHARSET)));
+            jwtString = Jwts
+                    .builder()
+                    .setHeaderParam("tpy", "JWT")
                     .claim(GlobalConstants.TOKEN_JWTID, authToken)
                     .signWith(SignatureAlgorithm.HS256, GlobalConstants.JWT_USER_KEY)
                     .compact();
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.warn("Exception : {}", e.getMessage());
-            throw new BizExceptionMessage(ErrorType.NOT_FOUND_USER_ERROR, userInfoVO.getServiceLocale() );
+            throw new BizExceptionMessage(ErrorType.NOT_FOUND_USER_ERROR, userInfoVO.getServiceLocale());
         }
 
         return jwtString;
     }
 
-    public String getRemoteIp(){
+    public String getRemoteIp() {
         String ip = request.getHeader("X-FORWARDED-FOR");
         if (ip == null) {
             ip = request.getRemoteAddr();
@@ -220,15 +242,15 @@ public class VerifyToken {
         return ip;
     }
 
-    public String getUserCodeId(){
+    public String getUserCodeId() {
         try {
             AuthTokenVO token = this.getAuthTokenFromTokenHeader();
-            if(token!=null){
+            if (token != null) {
                 return token.getUserCodeId();
-            }else{
+            } else {
                 return null;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }

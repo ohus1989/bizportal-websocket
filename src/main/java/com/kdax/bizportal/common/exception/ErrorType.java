@@ -29,6 +29,7 @@ public enum ErrorType {
     NOT_PERMISSION(22003, "Has not Permission", "This account not has role. Please contact the manager.", "NOT_PERMISSION"),
     NOT_EXIST_USER(22004, "User not exist", "User does not exist. Please check again.", "NOT_EXIST_USER"),
     NOT_INVALID_TOKEN(22005, "유효하지않은 토큰입니다.", "Invalid token", "NOT_INVALID_TOKEN"),
+    NOT_OTP_REGISTRANT(22006, "OTP를 등록한 사용자가 아닙니다.", "You are not a registered user for otp", "NOT_OTP_REGISTRANT"),
 
     // 25001 DB Error,  Database, SQL
     SQL_GENERAL_WARNING(10, "SQL OK But not success", "No data, No Update, etc", "SQL_GENERAL_WARNING"),

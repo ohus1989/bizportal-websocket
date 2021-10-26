@@ -8,7 +8,8 @@ import java.util.stream.Collectors;
 public enum AccessScopeType {
     SYSTEM("system", "admin"),
     PRIVATE("private", "authcheck"),
-    PUBLIC("public", "openall");
+    PUBLIC("public", "openall"),
+    WITHOUT_OTP_PRIVATE("woo_private", "otp non check");
 
     private final String level;
     private final String levelDescription;

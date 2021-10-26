@@ -14,5 +14,6 @@ public class AuthTokenVO {
     private String userCodeId;
     private String userDeptId;
     private String userLevel;
+    private Boolean isOtp;
     private Locale userLocale;
 }
