@@ -13,6 +13,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -127,7 +128,11 @@ public class VoConverterUtil {
             for (int i = 0; i < methods.length; i++) {
                 if (methodString.equals(methods[i].getName())) {
                     try {
-                        methods[i].invoke(obj, map.get(keyAttribute));
+                        if(methods[i].getParameterTypes()[0] == BigDecimal.class && map.get(keyAttribute) != null){
+                            methods[i].invoke(obj, new BigDecimal(map.get(keyAttribute).toString()));
+                        }else{
+                            methods[i].invoke(obj, map.get(keyAttribute));
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
