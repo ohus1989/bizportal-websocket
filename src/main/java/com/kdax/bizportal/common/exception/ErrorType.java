@@ -70,6 +70,11 @@ public enum ErrorType {
     // 29000~ sales Error
     DEP_AMT_NOT_EXCCED_SALES_AMT(29000, "입금액은 매출액을 초과 할 수 없습니다.", "입금액은 매출액을 초과 할 수 없습니다.", "DEP_AMT_NOT_EXCCED_SALES_AMT"),
 
+    // 30000~ leave Error
+    LEAVE_NOT_CAPABLE(30000, "해당 기간에 존재하는 일정이 있습니다.", "해당 기간에 존재하는 일정이 있습니다.", "LEAVE_NOT_CAPABLE"),
+    LEAVE_DUPLICATE(30001, "해당 기간에 중복되는 일정이 있습니다.", "해당 기간에 중복되는 일정이 있습니다.", "LEAVE_DUPLICATE"),
+    LEAVE_EQUAL_TIME(30002, "시간대를 중복하여 등록하실수 없습니다.", "시간대를 중복하여 등록하실수 없습니다.", "LEAVE_EQUAL_TIME"),
+    LEAVE_ADD_EXCEPTION(30003, "저장 실패.", "저장 실패.", "LEAVE_ADD_EXCEPTION"),
 
     // 90001~ default, unknown
     UNKNOWN(90001, "Server error", "Sever Internal Error.", "UNKNOWN"),
