@@ -18,4 +18,22 @@ public class BigDecimalUtil {
         }
         return sum;
     }
+
+    public static BigDecimal subtract(BigDecimal... addends){
+        BigDecimal sum = BigDecimal.ZERO;
+        if (addends != null) {
+            for(int i = 0; i < addends.length; i++){
+                BigDecimal addend = addends[i];
+                if (addend == null) {
+                    addend = BigDecimal.ZERO;
+                }
+                if(i == 0){
+                    sum = addend;
+                }else{
+                    sum = sum.subtract(addend);
+                }
+            }
+        }
+        return sum;
+    }
 }
