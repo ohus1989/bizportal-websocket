@@ -201,7 +201,7 @@ public class VerifyToken {
             }
 
             authTokenVO.setUserLevel("DEV");  // 향후 사용 여부 확인
-            authTokenVO.setExpireDate(userInfoVO.getSessionTime());
+            authTokenVO.setExpireDate(userInfoVO.getExpireTime());
             authTokenVO.setUserLocale(new Locale(userInfoVO.getServiceLocale()));
             authTokenVO.setUuid(sc.SHA256(getRemoteIp() + authTokenVO.getUserLevel()));
 
