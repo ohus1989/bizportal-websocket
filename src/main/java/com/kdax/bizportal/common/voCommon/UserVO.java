@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 
 @Data
 @Builder
@@ -47,5 +49,6 @@ public class UserVO {
     private String changePwdDate;
     private String changePwd;
     private String otpSecretKey;
+    private Date expireTime;
 
 }
