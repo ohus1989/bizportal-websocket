@@ -206,6 +206,9 @@ public class VerifyToken {
                 cal.add(Calendar.MINUTE, webExpireMinute);
             }
 
+            log.info("webExpireMinute : "+String.valueOf(webExpireMinute));
+            log.info("cal.getTime() : "+String.valueOf(cal.getTime()));
+            log.info("now : "+new Date());
             authTokenVO.setUserCodeId(userInfoVO.getCodeId());
 
             String lockENV = env.getProperty("spring.profiles.active");
