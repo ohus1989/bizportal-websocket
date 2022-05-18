@@ -39,6 +39,12 @@ public class VerifyToken {
     @Value("${bizportal.domain.smkey}")
     private String bizportalDomainSmKey;
 
+    @Value("${bizportal.auth.token.android.expire.minute}")
+    private int androidExpireMinute;
+
+    @Value("${bizportal.auth.token.web.expire.minute}")
+    private int webExpireMinute;
+
     @Value("${bizportal.auth.default.flag}")
     private boolean authDefaultFlag;
 
@@ -188,6 +194,18 @@ public class VerifyToken {
         try {
             SeedCipher sc = new SeedCipher();
 
+            //TUser-Agent 체크하여 시간 설정
+            String userAgent = request.getHeader("User-Agent");
+            log.info("User-Agent:\n{}", userAgent);
+
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(new Date());
+            if (userAgent != null && userAgent.contains("Android")) {
+                cal.add(Calendar.MINUTE, androidExpireMinute);
+            } else {
+                cal.add(Calendar.MINUTE, webExpireMinute);
+            }
+
             authTokenVO.setUserCodeId(userInfoVO.getCodeId());
 
             String lockENV = env.getProperty("spring.profiles.active");
@@ -201,7 +219,7 @@ public class VerifyToken {
             }
 
             authTokenVO.setUserLevel("DEV");  // 향후 사용 여부 확인
-            authTokenVO.setExpireDate(userInfoVO.getExpireTime());
+            authTokenVO.setExpireDate(cal.getTime());
             authTokenVO.setUserLocale(new Locale(userInfoVO.getServiceLocale()));
             authTokenVO.setUuid(sc.SHA256(getRemoteIp() + authTokenVO.getUserLevel()));
 

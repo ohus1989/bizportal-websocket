@@ -49,6 +49,6 @@ public class UserVO {
     private String changePwdDate;
     private String changePwd;
     private String otpSecretKey;
-    private Date expireTime;
+    private String expireTime;
 
 }
