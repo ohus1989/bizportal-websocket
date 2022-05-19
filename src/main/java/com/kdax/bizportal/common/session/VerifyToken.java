@@ -171,11 +171,6 @@ public class VerifyToken {
 
             Calendar today = Calendar.getInstance();
             today.setTime(new Date());
-            log.info("today : "+today.getTime().toString());
-            log.info("getExpireDate : "+authTokenVO.getExpireDate().toString());
-            log.info(authTokenVO
-                    .getExpireDate()
-                    .compareTo(today.getTime()) ==-1? "true" : "false");
 
             if (authTokenVO
                     .getExpireDate()
@@ -211,10 +206,6 @@ public class VerifyToken {
             } else {
                 cal.add(Calendar.MINUTE, webExpireMinute);
             }
-
-            log.info("webExpireMinute : "+String.valueOf(webExpireMinute));
-            log.info("cal.getTime() : "+String.valueOf(cal.getTime())); //Wed May 18 14:07:53 KST 2022
-            log.info("now : "+new Date()); //Wed May 18 14:06:53 KST 2022
 
             authTokenVO.setUserCodeId(userInfoVO.getCodeId());
 
