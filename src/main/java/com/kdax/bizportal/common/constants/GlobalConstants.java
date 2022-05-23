@@ -33,4 +33,6 @@ public class GlobalConstants {
     public static final String ESIGNON_GET_DOCLIST_REQ ="1123Q";
 
     public static final String WEB_VERSION = "WEB-VERSION";
+
+    public static final String MASK_CERT = "MASK_CERT_SET";
 }

@@ -5,6 +5,7 @@ import com.kdax.bizportal.common.constants.GlobalConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
@@ -61,8 +62,8 @@ public class RedisManager {
 
         vop.set(userRedisInfoVO.getUserCodeId(), new Gson().toJson(userRedisInfoVO));
         stringRedisTemplate.expire(userRedisInfoVO.getUserCodeId(),
-                                   GlobalConstants.DEFALUT_REDIS_TIMEOUT_USERINFO,
-                                   TimeUnit.SECONDS
+                GlobalConstants.DEFALUT_REDIS_TIMEOUT_USERINFO,
+                TimeUnit.SECONDS
         );
     }
 
@@ -82,4 +83,14 @@ public class RedisManager {
         return vop.get(key);
     }
 
+    public void setKeyValue(String key, String value, int timeOut) {
+        SetOperations<String, Object> setOps = redisTemplate.opsForSet();
+        setOps.add(key, value);
+        redisTemplate.expire(key, timeOut, TimeUnit.SECONDS);
+    }
+
+    public Boolean checkSetValue(String key, String value) {
+        SetOperations<String, Object> setOps = redisTemplate.opsForSet();
+        return setOps.isMember(key, value);
+    }
 }
