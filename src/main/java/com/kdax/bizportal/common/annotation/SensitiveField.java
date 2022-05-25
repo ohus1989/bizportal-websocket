@@ -8,4 +8,5 @@ import java.lang.annotation.*;
 public @interface SensitiveField {
     String encrypt() default "FALSE";
     String decrypt() default "FALSE";
+    String splitStr() default "";
 }
