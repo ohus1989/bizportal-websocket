@@ -21,6 +21,8 @@ public enum ErrorType {
     OTP_CODE_NOT_VALID(21013, "OTP 코드가 맞지 않습니다. 다시 입력 해주세요.", "OTP_CODE_NOT_VALID", "OTP_CODE_NOT_VALID"),
     OTP_NON_REGISTRATION(21014, "OTP가 등록된 사용자가 아닙니다.", "OTP_NON_REGISTRATION", "OTP_NON_REGISTRATION"),
     OTP_CREATION_FAILED(21015, "OTP 생성 실패", "OTP_CREATION_FAILED", "OTP_CREATION_FAILED"),
+    DUPLICATE_PASSWORD_FAILED(21016, "동일한 비밀번호를 사용할수 없습니다.", "You cannot use the same password.", "DUPLICATE_PASSWORD_FAILED"),
+    PASSWORD_LENGTH_FAILED(21017, "8자리 이상 20자리 이하입니다.", "8 or more and 20 or less.", "PASSWORD_LENGTH_FAILED"),
 
 
     // 22000 ~  auth, role
