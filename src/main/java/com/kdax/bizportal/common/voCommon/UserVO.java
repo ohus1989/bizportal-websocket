@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 
 @Data
@@ -50,5 +50,6 @@ public class UserVO {
     private String changePwd;
     private String otpSecretKey;
     private String expireTime;
-
+    private int loginFailTimes;
+    private LocalDateTime lastFailTime;
 }

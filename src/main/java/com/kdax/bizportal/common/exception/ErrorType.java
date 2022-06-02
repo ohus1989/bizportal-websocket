@@ -23,6 +23,7 @@ public enum ErrorType {
     OTP_CREATION_FAILED(21015, "OTP 생성 실패", "OTP_CREATION_FAILED", "OTP_CREATION_FAILED"),
     DUPLICATE_PASSWORD_FAILED(21016, "동일한 비밀번호를 사용할수 없습니다.", "You cannot use the same password.", "DUPLICATE_PASSWORD_FAILED"),
     PASSWORD_LENGTH_FAILED(21017, "8자리 이상 20자리 이하입니다.", "8 or more and 20 or less.", "PASSWORD_LENGTH_FAILED"),
+    LOGIN_FAILED_SEVERAL_TIMES(21018, "로그인 5회 이상 실패하시어 10분간 로그인을 하실수 없습니다.", "You cannot log in for 10 minutes after failed login more than 5 times..", "LOGIN_FAILED_SEVERAL_TIMES"),
 
 
     // 22000 ~  auth, role
