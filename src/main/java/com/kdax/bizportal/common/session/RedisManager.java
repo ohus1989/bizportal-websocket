@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 import java.util.concurrent.TimeUnit;
 
@@ -21,6 +22,9 @@ public class RedisManager {
 
     @Autowired
     StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    VerifyToken verifyToken;
 
     public void setValue(String key, String value) {
         this.setValue(key, value, GlobalConstants.DEFALUT_REDIS_TIMEOUT_USERINFO);
@@ -89,8 +93,13 @@ public class RedisManager {
         redisTemplate.expire(key, timeOut, TimeUnit.SECONDS);
     }
 
-    public Boolean checkSetValue(String key, String value) {
+    public Boolean checkSetValue(String key, String token) {
+        AuthTokenVO authVo = verifyToken.getAuthTokenFromString(token);
+        if(ObjectUtils.isEmpty(authVo)){
+            return false;
+        }
+
         SetOperations<String, Object> setOps = redisTemplate.opsForSet();
-        return setOps.isMember(key, value);
+        return setOps.isMember(key, authVo.getUserCodeId());
     }
 }
