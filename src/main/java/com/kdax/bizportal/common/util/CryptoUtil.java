@@ -87,6 +87,32 @@ public class CryptoUtil {
      * @throws IllegalBlockSizeException
      */
     public static String encryptAES256(String msg, String key) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidParameterSpecException, BadPaddingException, IllegalBlockSizeException {
+        return encryptAES256(msg, key, 70000);
+    }
+
+    /**
+     * 위에서 암호화된 내용을 복호화 한다.
+     *
+     * @param msg
+     * @param key
+     * @return
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     * @throws InvalidAlgorithmParameterException
+     * @throws InvalidKeyException
+     * @throws BadPaddingException
+     * @throws IllegalBlockSizeException
+     */
+    public static String decryptAES256(String msg, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+        try {
+            return decryptAES256(msg, key, 70000);
+        }catch (Exception e){
+            return msg;
+        }
+    }
+
+    public static String encryptAES256(String msg, String key, int iterationCount) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidParameterSpecException, BadPaddingException, IllegalBlockSizeException {
         SecureRandom random = new SecureRandom();
         byte[] bytes = new byte[20];
         random.nextBytes(bytes);
@@ -95,7 +121,7 @@ public class CryptoUtil {
         // Password-Based Key Derivation function 2
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         // 70000번 해시하여 256 bit 길이의 키를 만든다.
-        PBEKeySpec spec = new PBEKeySpec(key.toCharArray(), saltBytes, 70000, 256);
+        PBEKeySpec spec = new PBEKeySpec(key.toCharArray(), saltBytes, iterationCount, 256);
 
         SecretKey secretKey = factory.generateSecret(spec);
         SecretKeySpec secret = new SecretKeySpec(secretKey.getEncoded(), "AES");
@@ -132,26 +158,38 @@ public class CryptoUtil {
      * @throws BadPaddingException
      * @throws IllegalBlockSizeException
      */
-    public static String decryptAES256(String msg, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        ByteBuffer buffer = ByteBuffer.wrap(Base64.getDecoder().decode(msg));
+    public static String decryptAES256(String msg, String key, int iterationCount) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            ByteBuffer buffer = ByteBuffer.wrap(Base64.getDecoder().decode(msg));
 
-        byte[] saltBytes = new byte[20];
-        buffer.get(saltBytes, 0, saltBytes.length);
-        byte[] ivBytes = new byte[cipher.getBlockSize()];
-        buffer.get(ivBytes, 0, ivBytes.length);
-        byte[] encryoptedTextBytes = new byte[buffer.capacity() - saltBytes.length - ivBytes.length];
-        buffer.get(encryoptedTextBytes);
+            byte[] saltBytes = new byte[20];
+            buffer.get(saltBytes, 0, saltBytes.length);
+            byte[] ivBytes = new byte[cipher.getBlockSize()];
+            buffer.get(ivBytes, 0, ivBytes.length);
+            byte[] encryoptedTextBytes = new byte[buffer.capacity() - saltBytes.length - ivBytes.length];
+            buffer.get(encryoptedTextBytes);
 
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-        PBEKeySpec spec = new PBEKeySpec(key.toCharArray(), saltBytes, 70000, 256);
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            PBEKeySpec spec = new PBEKeySpec(key.toCharArray(), saltBytes, iterationCount, 256);
 
-        SecretKey secretKey = factory.generateSecret(spec);
-        SecretKeySpec secret = new SecretKeySpec(secretKey.getEncoded(), "AES");
+            SecretKey secretKey = factory.generateSecret(spec);
+            SecretKeySpec secret = new SecretKeySpec(secretKey.getEncoded(), "AES");
 
-        cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(ivBytes));
+            cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(ivBytes));
 
-        byte[] decryptedTextBytes = cipher.doFinal(encryoptedTextBytes);
-        return new String(decryptedTextBytes);
+            byte[] decryptedTextBytes = cipher.doFinal(encryoptedTextBytes);
+            return new String(decryptedTextBytes);
+    }
+
+    public static String encryptAES256Hash1000(String msg, String key) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidParameterSpecException, BadPaddingException, IllegalBlockSizeException {
+        return encryptAES256(msg, key, 1000);
+    }
+
+    public static String decryptAES256Hash1000(String msg, String key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+        try {
+            return decryptAES256(msg, key, 1000);
+        }catch (Exception e){
+            return msg;
+        }
     }
 }
