@@ -14,6 +14,8 @@ public class MaskingUtil {
             return value;
         }
 
+        value = value.trim();
+
         String str = "";
         switch (type) {
             case PHONE:
@@ -117,9 +119,9 @@ public class MaskingUtil {
         if (matcher.find()) {
             return new StringBuffer(matcher.group(1)).append("******").toString();
         }else if(matcherDrive.find()){
-            return new StringBuffer(matcher.group(1)).append("******").toString();
+            return new StringBuffer(matcherDrive.group(1)).append("******").toString();
         }else if(matcherForeign.find()){
-            return new StringBuffer(matcher.group(1)).append("******").toString();
+            return new StringBuffer(matcherForeign.group(1)).append("******").toString();
         }
         return registrationNo;
     }
