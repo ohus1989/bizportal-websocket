@@ -49,12 +49,14 @@ public class MaskingUtil {
     private String phoneMasking(String phoneNumber) {
         String regex = "^[0-9]*$";
         Matcher matcher = Pattern.compile(regex).matcher(phoneNumber);
-        if (matcher.find()) {
-            String target = matcher.group(0).substring(3,7);
-            int length = target.length();
-            char[] c = new char[length];
-            Arrays.fill(c, '*');
-            return phoneNumber.replace(target, String.valueOf(c));
+        if(phoneNumber.length() >= 8){
+            if (matcher.find()) {
+                String target = matcher.group(0).substring(3,7);
+                int length = target.length();
+                char[] c = new char[length];
+                Arrays.fill(c, '*');
+                return phoneNumber.replace(target, String.valueOf(c));
+            }
         }
         return phoneNumber;
     }
