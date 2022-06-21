@@ -81,6 +81,8 @@ public enum ErrorType {
 
     // 90001~ default, unknown
     UNKNOWN(90001, "Server error", "Sever Internal Error.", "UNKNOWN"),
+    ACCESSKEY_NULL(90002,"AccessKey is null","AccessKey is null","ACCESSKEY_NULL"),
+    ACCESSKEY_NOT_EQUAL(90003,"AccessKey is not equal","AccessKey is not equal","ACCESSKEY_NOT_EQUAL"),
     // 91001~ default, unknown
     OBJECT_NULL_EXCEPTION(91001, "object is null", "object is null", "OBJECT_NULL_EXCEPTION");
 
