@@ -35,4 +35,5 @@ public class GlobalConstants {
     public static final String WEB_VERSION = "WEB-VERSION";
 
     public static final String MASK_CERT = "MASK_CERT_SET";
+    public static final String CONTENT_DISPOSITION = "Content-Disposition";
 }
