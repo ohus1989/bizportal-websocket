@@ -15,7 +15,7 @@ public class GlobalConstants {
     public static final String DEFALUT_SALT_KEY ="KKK";
 
 
-    public static final int DEFALUT_REDIS_TIMEOUT_USERINFO = 120; //second //7200
+    public static final int DEFALUT_REDIS_TIMEOUT_USERINFO = 7200; //second
 
     /* esignon API*/
     public static final String ESIGNON_COMPANY_ID_HEADER = "ESIGNON-companyid";
